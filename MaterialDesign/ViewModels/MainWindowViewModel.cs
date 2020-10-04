@@ -117,7 +117,7 @@ namespace MaterialDesign.ViewModels
             this.InitializeReactiveProperty();
 
             // 初期ViewTitleを設定します。
-            this.ViewTitle.Value = EnumDatas.ButtonNames.氏名.ToString();
+            this.ViewTitle.Value = EnumDatas.ViewTitle.氏名.ToString();
 
             // 初期画面を設定します。
             RegionManager.RegisterViewWithRegion(
@@ -227,9 +227,9 @@ namespace MaterialDesign.ViewModels
             // 画面遷移可能かチェックします。遷移可能な場合trueとなります。
             var mv = Utility.EnumUtil.Find(typeof(EnumDatas.ViewNames), command.ViewName);
 
-            // 押下されたボタンのenumを取得します。
-            var bn = (EnumDatas.ButtonNames)Utility.EnumUtil.EnumParse(
-                typeof(EnumDatas.ButtonNames),
+            // 押下されたボタンのViewTitleを取得します。
+            var viewTitle = (EnumDatas.ViewTitle)Utility.EnumUtil.EnumParse(
+                typeof(EnumDatas.ViewTitle),
                 ci.Title.Value
                 );
 
@@ -248,7 +248,8 @@ namespace MaterialDesign.ViewModels
                     if (mv && va && command.ViewName != av.ViewName)
                     {
                         // ViewTitleを設定します。
-                        this.ViewTitle.Value = bn.ToString();
+                        this.ViewTitle.Value = viewTitle.ToString();
+
                         // 対象画面へ遷移します。
                         this.Navigate(
                             regionName: Common.ConstDatas.ContentRegion,

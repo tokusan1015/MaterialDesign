@@ -34,27 +34,9 @@
         }
 
         /// <summary>
-        /// データ名
+        /// ViewTitle
         /// </summary>
-        public enum DataNames
-        {
-            苗字,
-            名前,
-            生年月日,
-            性別,
-            国籍,
-            郵便番号,
-            都道府県,
-            市区町村,
-            番地,
-            保存パス,
-            備考,
-        }
-
-        /// <summary>
-        /// ボタン名
-        /// </summary>
-        public enum ButtonNames
+        public enum ViewTitle
         {
             氏名,
             住所,
