@@ -121,10 +121,8 @@ namespace SQLiteAccessorBase
         /// コネクションの接続後に呼び出してください。
         /// </summary>
         /// <param name="queryData">クエリデータを設定します。</param>
-        /// <param name="makeSql">SQL文の自動生成を設定します。</param>
         public void ExecuteQuery(
-            Utility.QueryData queryData,
-            bool makeSql = true
+            Utility.QueryData queryData
             )
         {
             // 処理可能か調べます。
@@ -135,9 +133,6 @@ namespace SQLiteAccessorBase
             {
                 try
                 {
-                    // SQL文を自動生成します
-                    if (makeSql) queryData.MakeSQLiteCreateTableSQL();
-
                     // SQLiteCommandにQueryDataを設定します。
                     this.SetSQLiteCommandToQueryData(cmd: cmd, queryData: queryData);
 
