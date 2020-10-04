@@ -1,0 +1,48 @@
+﻿<UserControl x:Class="MaterialDesignViews.Views.ViewC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"             
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="60"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" 
+                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                   VerticalAlignment="Center" HorizontalAlignment="Left"
+                   Margin="10"
+                   Text="{Binding SavePath.Title.Value}"
+                   />
+        <Button Grid.Row="0" Grid.Column="2"
+                Visibility="{Binding PathButton.IsVisible.Value, Converter={StaticResource BoolToVisibility}}"
+                IsEnabled="{Binding PathButton.IsEnable.Value}"
+                Command="{Binding PathButton.Clicked}"
+                Content="{Binding PathButton.Title.Value}"
+                Margin="5,5,10,5"
+                />
+        <TextBlock Grid.Row="0" Grid.Column="1"
+                   VerticalAlignment="Center"
+                   Text="{Binding SavePath.Data.Value, UpdateSourceTrigger=PropertyChanged}"
+                   Margin="5,5,10,5"
+                   />
+        <TextBlock Grid.Row="1" Grid.Column="0" 
+                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Left"
+                   Margin="10"
+                   Text="{Binding Etc.Title.Value}"
+                   />
+        <TextBox Grid.Row="1" Grid.Column="1"
+                 VerticalAlignment="Center"
+                 Text="{Binding Etc.Data.Value, UpdateSourceTrigger=PropertyChanged}"
+                 Margin="10,5,10,5"
+                 />
+    </Grid>
+</UserControl>
