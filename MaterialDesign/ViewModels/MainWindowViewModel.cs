@@ -1,9 +1,15 @@
 ﻿using Common;
 using MaterialDesignModels;
+using Prism.Ioc;
 using Prism.Regions;
 using Reactive.Bindings;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Windows.Controls;
+using System.Linq;
+using System.Data.Linq;
+using Prism.Events;
 
 namespace MaterialDesign.ViewModels
 {
@@ -34,56 +40,66 @@ namespace MaterialDesign.ViewModels
         /// ボタン1情報(Dataは使用しないのでint型にしています。)
         /// </summary>
         [RPUtility.ControlInfo(
-            displeyName: "氏名",
-            groupNo: 1,
-            command: "Move ViewA"
+            displeyName: "氏名"
+            , groupNo: 1
+            , commandText: "Move ViewA"
+            , isEnable: true
+            , isVisible: true
             )]
         public RPUtility.ControlInfo<int> BtnInfo1 { get; } = new RPUtility.ControlInfo<int>();
         /// <summary>
         /// ボタン2情報(Dataは使用しないのでint型にしています。)
         /// </summary>
         [RPUtility.ControlInfo(
-            displeyName: "住所",
-            groupNo: 1,
-            command: "Move ViewB"
+            displeyName: "住所"
+            , groupNo: 1
+            , commandText: "Move ViewB"
+            , isEnable: true
+            , isVisible: true
             )]
         public RPUtility.ControlInfo<int> BtnInfo2 { get; } = new RPUtility.ControlInfo<int>();
         /// <summary>
         /// ボタン3情報(Dataは使用しないのでint型にしています。)
         /// </summary>
         [RPUtility.ControlInfo(
-            displeyName: "設定",
-            groupNo: 2,
-            command: "Move ViewC"
+            displeyName: "設定"
+            , groupNo: 2
+            , commandText: "Move ViewC"
+            , isEnable: true
+            , isVisible: true
             )]
         public RPUtility.ControlInfo<int> BtnInfo3 { get; } =new RPUtility.ControlInfo<int>();
         /// <summary>
         /// ボタン4情報(Dataは使用しないのでint型にしています。)
         /// </summary>
         [RPUtility.ControlInfo(
-            displeyName: "一覧",
-            groupNo: 2,
-            command: "Move ViewD",
-            isEnable: false,
-            isVisible: false
+            displeyName: "一覧"
+            , groupNo: 2
+            , commandText: "Move ViewD"
+            , isEnable: false
+            , isVisible: false
             )]
         public RPUtility.ControlInfo<int> BtnInfo4 { get; } = new RPUtility.ControlInfo<int>();
         /// <summary>
         /// ボタン5情報(Dataは使用しないのでint型にしています。)
         /// </summary>
         [RPUtility.ControlInfo(
-            displeyName: "反転",
-            groupNo: 3,
-            command: "InverseEnable"
+            displeyName: "反転"
+            , groupNo: 3
+            , commandText: "InverseEnable"
+            , isEnable: true
+            , isVisible: true
             )]
         public RPUtility.ControlInfo<int> BtnInfo5 { get; } = new RPUtility.ControlInfo<int>();
         /// <summary>
         /// ボタン6情報(Dataは使用しないのでint型にしています。)
         /// </summary>
         [RPUtility.ControlInfo(
-            displeyName: "終了",
-            groupNo:4,
-            command: "ExitApp"
+            displeyName: "終了"
+            , groupNo:4
+            , commandText: "ExitApp"
+            , isEnable: true
+            , isVisible: true
             )]
         public RPUtility.ControlInfo<int> BtnInfo6 { get; } = new RPUtility.ControlInfo<int>();
         #endregion Bindingプロパティ
@@ -94,94 +110,99 @@ namespace MaterialDesign.ViewModels
         /// 引数を追加することによりPrismに対して各インスタンスを要求しています。
         /// CommonDatasは、App.xaml.csのRegisterTypesにて登録されます。
         /// </summary>
+        /// <param name="container">拡張コンテナを設定します。</param>
         /// <param name="regionManager">リージョンマネージャを設定します。</param>
+        /// <param name="eventAggregator">イベントアグリゲータを設定します。</param>
         /// <param name="commonDatas">共通データを設定します。</param>
         public MainWindowViewModel(
+            [param: Required]IContainerExtension container,
             [param: Required]IRegionManager regionManager,
+            [param: Required]IEventAggregator eventAggregator,
             [param: Required]Common.CommonDatas commonDatas
-            ) : base(regionManager: regionManager, commonDatas: commonDatas)
+            ) : base(
+                container: container,
+                regionManager: regionManager,
+                eventAggregator: eventAggregator,
+                commonDatas: commonDatas,
+                // MainViewName,ViewNameを設定します。
+                mainViewName: EnumDatas.ViewNames.Main.ToString(),
+                viewName: EnumDatas.ViewNames.Main.ToString()
+                )
         {
             // 初期化処理を行います。
             this.Initialize();
-
-            // データを取得します。
-            var da = new DataAccess();
-            var result = da.LoadCommonDatas(this.CommonDatas as CommonDatas);
         }
         /// <summary>
         /// 初期化処理を表します。
         /// </summary>
         private void Initialize()
         {
-            // ReactiveProperty初期化処理を行います。
-            this.InitializeReactiveProperty();
-
-            // 初期ViewTitleを設定します。
-            this.ViewTitle.Value = EnumDatas.ViewTitle.氏名.ToString();
-
-            // 初期画面を設定します。
-            RegionManager.RegisterViewWithRegion(
-                Common.ConstDatas.ContentRegion,
-                typeof(MaterialDesignViews.Views.ViewA)
-                );
+            // コンポーネントの初期化処理を行います。
+            this.InitializeComponent();
         }
-
         /// <summary>
-        /// ReactivePropertyの初期化処理を表します。
+        /// コンポーネントの初期化処理を表します。
         /// </summary>
-        private void InitializeReactiveProperty()
-        { 
+        private void InitializeComponent()
+        {
+            // 自身のタイプ取得
+            var thisType = this.GetType();
+
             // BtnInfo1の情報を設定します。
-            this.BtnInfo1.SetAll<MainWindowViewModel>(
-                cibList: this.CIBList,
-                onClicked: this.OnBtnInfo_Clicked,
+            this.BtnInfo1.SetAll(
+                viewModelType: thisType,
+                cibList: this.CibList,
+                onDcommand: this.OnBtnInfo_Clicked,
                 data: new Utility.DataAndName<ReactiveProperty<int>>()
                 {
                     Data = null,
                     PropertyName = Utility.ObjectUtil.GetPropertyName(() => BtnInfo1)
                 });
             // BtnInfo2の情報を設定します。
-            this.BtnInfo2.SetAll<MainWindowViewModel>(
-                cibList: this.CIBList,
-                onClicked: this.OnBtnInfo_Clicked,
+            this.BtnInfo2.SetAll(
+                viewModelType: thisType,
+                cibList: this.CibList,
+                onDcommand: this.OnBtnInfo_Clicked,
                 data: new Utility.DataAndName<ReactiveProperty<int>>()
                 {
                     Data = null,
                     PropertyName = Utility.ObjectUtil.GetPropertyName(() => BtnInfo2)
                 });
             // BtnInfo3の情報を設定します。
-            this.BtnInfo3.SetAll<MainWindowViewModel>(
-                cibList: this.CIBList,
-                onClicked: this.OnBtnInfo_Clicked,
+            this.BtnInfo3.SetAll(
+                viewModelType: thisType,
+                cibList: this.CibList,
+                onDcommand: this.OnBtnInfo_Clicked,
                 data: new Utility.DataAndName<ReactiveProperty<int>>()
                 {
                     Data = null,
                     PropertyName = Utility.ObjectUtil.GetPropertyName(() => BtnInfo3)
                 });
             // BtnInfo4の情報を設定します。
-            this.BtnInfo4.SetAll<MainWindowViewModel>(
-                cibList: this.CIBList,
-                onClicked: this.OnBtnInfo_Clicked,
-                isEnable: false,
-                isVisible: false,
+            this.BtnInfo4.SetAll(
+                viewModelType: thisType,
+                cibList: this.CibList,
+                onDcommand: this.OnBtnInfo_Clicked,
                 data: new Utility.DataAndName<ReactiveProperty<int>>()
                 {
                     Data = null,
                     PropertyName = Utility.ObjectUtil.GetPropertyName(() => BtnInfo4)
                 });
             // BtnInfo5の情報を設定します。
-            this.BtnInfo5.SetAll<MainWindowViewModel>(
-                cibList: this.CIBList,
-                onClicked: this.OnBtnInfo_Clicked,
+            this.BtnInfo5.SetAll(
+                viewModelType: thisType,
+                cibList: this.CibList,
+                onDcommand: this.OnBtnInfo_Clicked,
                 data: new Utility.DataAndName<ReactiveProperty<int>>()
                 {
                     Data = null,
                     PropertyName = Utility.ObjectUtil.GetPropertyName(() => BtnInfo5)
                 });
             // BtnInfo6の情報を設定します。
-            this.BtnInfo6.SetAll<MainWindowViewModel>(
-                cibList: this.CIBList,
-                onClicked: this.OnBtnInfo_Clicked,
+            this.BtnInfo6.SetAll(
+                viewModelType: thisType,
+                cibList: this.CibList,
+                onDcommand: this.OnBtnInfo_Clicked,
                 data: new Utility.DataAndName<ReactiveProperty<int>>()
                 {
                     Data = null,
@@ -190,27 +211,82 @@ namespace MaterialDesign.ViewModels
         }
         #endregion コンストラクタ
 
-        #region デストラクタ
+        #region Loaded
         /// <summary>
-        /// デストラクタ
+        /// ロードイベント
         /// </summary>
-        ~MainWindowViewModel()
+        /// <param name="sender">送信元</param>
+        /// <param name="args">送信パラメータ</param>
+        protected override void Loaded()
         {
-            this.Dispose_RP();
-            GC.SuppressFinalize(this);
+            // リージョンを設定します。
+            this.SetRegion(this.RegionManager.Regions[Common.ConstDatas.ContentRegion]);
+
+            // Viewの初期化処理を行います。
+            this.InitializeViews();
+
+            // 初期ViewTitleを設定します。
+            this.ViewTitle.Value = EnumDatas.ViewTitle.氏名.ToString();
+
+            // 初期画面を設定します。
+            this.ChangeShowView(EnumDatas.ViewNames.ViewA.ToString());
+            //RegionManager.RegisterViewWithRegion(
+            //    Common.ConstDatas.ContentRegion,
+            //    typeof(MaterialDesignViews.Views.ViewA)
+            //    );
+
+            // データを取得します。
+            var da = new DataAccess();
+            da.LoadCommonDatas(this.CommonDatas);
+
+            // メッセージ受信開始
+            this.MessageManager.Start = true;
+
+            // 初期化完了フラグ設定
+            this.InitiazaizuEnd = true;
         }
+
         /// <summary>
-        /// ReactivePropertyの破棄処理
+        /// Viewの初期化処理を表します。
         /// </summary>
-        private void Dispose_RP()
+        private void InitializeViews()
         {
-            this.WindowTitle.Dispose();
-            this.MainTitle.Dispose();
-            this.ViewTitle.Dispose();
+            // RegionおよびViewsに登録します。
+            this.AddRegionAndViews<MaterialDesignViews.Views.ViewA>(
+                viewName: EnumDatas.ViewNames.ViewA.ToString());
+            this.AddRegionAndViews<MaterialDesignViews.Views.ViewB>(
+                viewName: EnumDatas.ViewNames.ViewB.ToString());
+            this.AddRegionAndViews<MaterialDesignViews.Views.ViewC>(
+                viewName: EnumDatas.ViewNames.ViewC.ToString());
         }
-        #endregion デストラクタ
+        #endregion Loaded
 
         #region イベント
+        /// <summary>
+        /// メッセージ受信イベント
+        /// 自分宛のメッセージのみ受信します。
+        /// </summary>
+        /// <param name="message">受信メッセージ</param>
+        protected override void ReceivedMessage(string message)
+        {
+            // メッセージ受信処理を記述します。
+            // メッセージを解析します。
+            var (receiver, sender, value) = this.MessageManager
+                .AnalyseMessageCommand<EnumDatas.MessageCommand>(message);
+
+            // コマンドに対応する処理を行います。 
+            switch (value)
+            {
+                case EnumDatas.MessageCommand.InputError:
+                    this.SetEnables(false, -1);
+                    break;
+                case EnumDatas.MessageCommand.NoInputError:
+                    this.SetEnables(true, -1);
+                    break;
+                default:
+                    throw new InvalidOperationException("command");
+            }
+        }
         /// <summary>
         /// BtnInfoボタンクリックイベント
         /// 全てのボタン押下がここに来るように設定しています。
@@ -219,13 +295,13 @@ namespace MaterialDesign.ViewModels
         /// <param name="e">送信パラメータが設定されます。</param>
         private void OnBtnInfo_Clicked(object sender, RPUtility.ControlInfoEventArgs e)
         {
+            // クリックイベント処理を記述します。
             // 各データを取得します。
-            var cd = this.CommonDatas as CommonDatas;
             var ci = (sender as RPUtility.ControlInfo<int>);
-            var command = this.AnalyseCommand(e.Param as string);
+            var (Command, ViewName) = Utility.StringUtil.AnalyseCommand(e.Param as string);
 
             // 画面遷移可能かチェックします。遷移可能な場合trueとなります。
-            var mv = Utility.EnumUtil.Find(typeof(EnumDatas.ViewNames), command.ViewName);
+            var mv = Utility.EnumUtil.EnumIsDefined(typeof(EnumDatas.ViewNames), ViewName);
 
             // 押下されたボタンのViewTitleを取得します。
             var viewTitle = (EnumDatas.ViewTitle)Utility.EnumUtil.EnumParse(
@@ -233,27 +309,25 @@ namespace MaterialDesign.ViewModels
                 ci.Title.Value
                 );
 
-            // エラー検証を行います。エラーがない場合trueとなります。
-            var av = cd.ActiveView as RPUtility.BindableBasePlus;
-            var va = !av.HasErrors();
-
             // コマンド解析
-            switch (command.Command)
+            switch (Command)
             {
                 case "Move":
                     // 画面遷移可能かチェックします。
                     // mv：移動可能なViewである事(EnumDatas.ViewNamesに存在している)
-                    // va：エラーが無い事(エラーがない場合true)
-                    // rn != av.ViewName： 異なるViewである事
-                    if (mv && va && command.ViewName != av.ViewName)
+                    // コマンドのViewName： 異なるViewである事
+                    if (mv && ViewName != this.ActiveViewName)
                     {
                         // ViewTitleを設定します。
                         this.ViewTitle.Value = viewTitle.ToString();
 
+                        // コマンドのViewNameを表示します。
+                        this.ChangeShowView(ViewName);
+
                         // 対象画面へ遷移します。
-                        this.Navigate(
-                            regionName: Common.ConstDatas.ContentRegion,
-                            target: command.ViewName);
+                        //this.Navigate(
+                        //    regionName: Common.ConstDatas.ContentRegion,
+                        //    target: ViewName);
                     }
                     break;
                 case "InverseEnable":
@@ -261,37 +335,23 @@ namespace MaterialDesign.ViewModels
                     this.InvertEnables(1);
                     break;
                 case "ExitApp":
-                    // エラーが存在しない場合アプリケーションを終了します。
-                    if (va)
-                    {
-                        // アプリケーションを終了します。
-                        this.ExitApplication();
-                    }
+                    // アプリケーションを終了します。
+                    this.ExitApplication();
                     break;
                 default:
-                    throw new System.Exception($"存在しないコマンドが指定されました。Command={command.Command}");
+                    throw new InvalidOperationException($"存在しないコマンドが指定されました。Command={Command}");
             }
         }
         #endregion イベント
 
         #region メソッド
         /// <summary>
-        /// コマンドを分解します。
+        /// CommonDatasにデータを保存します。
         /// </summary>
-        /// <param name="command">コマンド文字列</param>
-        /// <returns>(Command, ViewName)形式で返します。</returns>
-        private (string Command, string ViewName) AnalyseCommand(
-            string command
-            )
+        /// <param name="cd">CommonDatasを設定します。</param>
+        protected override void SaveCommonDatas()
         {
-            var s = command.Split(' ');
-            string Command = "";
-            string ViewName = "";
 
-            if (s.Length > 0) Command = s[0];
-            if (s.Length > 1) ViewName = s[1];
-
-            return (Command, ViewName);
         }
         /// <summary>
         /// アプリケーション終了処理
@@ -299,10 +359,8 @@ namespace MaterialDesign.ViewModels
         private void ExitApplication()
         {
             // データ保存
-            var da = new DataAccess();
-            var result = da.SaveCommonDatas(
-                cd: this.CommonDatas as CommonDatas
-                );
+            var da = new MaterialDesignModels.DataAccess();
+            da.SaveCommonDatas(this.CommonDatas);
 
             // アプリケーションを終了します。
             System.Windows.Application.Current.Shutdown();
@@ -314,7 +372,7 @@ namespace MaterialDesign.ViewModels
         /// パラメータを設定します。
         /// </summary>
         /// <returns>パラメータオブジェクトを設定します。</returns>
-        protected override object SetNavigateParameters()
+        public override object SetNavigateParameters()
         {
             // 必要な場合はParamDatasインスタンスを渡します。
             return null;
@@ -323,10 +381,29 @@ namespace MaterialDesign.ViewModels
         /// パラメータを取得します。
         /// </summary>
         /// <param name="parameters">パラメータオブジェクトを設定します。</param>
-        protected override void GetNavigateParameters(object parameters)
+        public override void GetNavigateParameters(object parameters)
         {
             // ParamDatasとして受け取ります。
-            var param = parameters as Common.ParamDatas;
+            //var param = parameters as Common.ParamDatas;
+        }
+
+        /// <summary>
+        /// 画面遷移前に呼び出されます。
+        /// 遷移の実行許可確認を行います。
+        /// </summary>
+        /// <returns>画面遷移可能な場合trueを返します。</returns>
+        public override bool IsNavigate()
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// ナビゲーションが完了したことを知らせます。
+        /// </summary>
+        /// <param name="result">ナビゲーション結果が返ります。</param>
+        public override void NavigationComplete(NavigationResult result)
+        {
+            ;
         }
         #endregion BindableBasePlus
     }

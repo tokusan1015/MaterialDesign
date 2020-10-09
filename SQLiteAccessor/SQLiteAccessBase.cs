@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
+[assembly: CLSCompliant(true)]
 namespace SQLiteAccessorBase
 {
     /// <summary>
@@ -34,9 +35,13 @@ namespace SQLiteAccessorBase
         /// </summary>
         /// <param name="DataSource">データソースを設定します。</param>
         public SQLiteAccessBase(
-            string dataSource
+            [param: Required]string dataSource
             )
         {
+            // nullチェック
+            if (dataSource == null)
+                throw new ArgumentNullException("dataSource");
+
             // データソースを設定します。
             if (dataSource.Length > 0)
                 this.DataSource = dataSource;
@@ -197,14 +202,19 @@ namespace SQLiteAccessorBase
         /// <param name="cmd">SQLiteCommandを設定します。</param>
         /// <param name="queryData">QueryDataを設定します。</param>
         /// <returns>処理件数を返します。</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:SQL クエリのセキュリティ脆弱性を確認")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1307:SpecifyStringComparison", MessageId = "System.String.IndexOf(System.String)")]
         protected void SetSQLiteCommandToQueryData(
             [param: Required]SQLiteCommand cmd,
             [param: Required]Utility.QueryData queryData
             )
         {
-            // null の場合例外発生します。
-            if (cmd == null || queryData == null)
-                throw new ArgumentNullException("cmd or queryData");
+            // nullチェック
+            if (cmd == null)
+                throw new ArgumentNullException("cmd");
+            if (queryData == null)
+                throw new ArgumentNullException("queryData");
 
             // パラメータクリア
             cmd.Parameters.Clear();
@@ -260,7 +270,7 @@ namespace SQLiteAccessorBase
             // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
             Dispose(true);
             // TODO: 上のファイナライザーがオーバーライドされる場合は、次の行のコメントを解除してください。
-            // GC.SuppressFinalize(this);
+            GC.SuppressFinalize(this);
         }
         #endregion
     }

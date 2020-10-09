@@ -1,6 +1,7 @@
 ﻿using MaterialDesignViews.Views;
 using Prism.Ioc;
 using Prism.Modularity;
+using Prism.Regions;
 using System.ComponentModel.DataAnnotations;
 
 namespace MaterialDesignViews
@@ -19,7 +20,7 @@ namespace MaterialDesignViews
         /// <param name="containerProvider">登録先コンテナレジストリを設定します。</param>
         public void OnInitialized(IContainerProvider containerProvider)
         {
- 
+            ;
         }
 
         /// <summary>
@@ -32,11 +33,11 @@ namespace MaterialDesignViews
             [param: Required]IContainerRegistry containerRegistry
             )
         {
-            // 画面遷移画面用ユーザコントロール追加
+            // 画面遷移型ユーザコントロール追加
             containerRegistry.RegisterForNavigation<ViewA>();
             containerRegistry.RegisterForNavigation<ViewB>();
             containerRegistry.RegisterForNavigation<ViewC>();
-            containerRegistry.RegisterForNavigation<ViewD>();
+            //containerRegistry.RegisterForNavigation<ViewD>();
         }
     }
 }

@@ -11,8 +11,9 @@ namespace Utility
     /// Objectユーティリティ
     /// </summary>
     [Utility.Developer(name: "tokusan1015")]
-    public class ObjectUtil
+    public static class ObjectUtil
     {
+        #region GetPropertyName
         /// <summary>
         /// 対象のプロパティ名を取得します。
         /// 対象をラムダ式で指定します。
@@ -22,72 +23,199 @@ namespace Utility
         /// 結果：nameには、"Day"が入ります。
         /// </summary>
         /// <typeparam name="T">対象の型を設定します。</typeparam>
-        /// <param name="e">ラムダ式を設定します。</param>
+        /// <param name="func">ラムダ式を設定します。</param>
         /// <returns>プロパティ名を返します。</returns>
-        public static string GetPropertyName<T>(Expression<Func<T>> e)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
+        public static string GetPropertyName<T>(
+            [param: Required]Expression<Func<T>> func
+            )
         {
-            return ((MemberExpression)e.Body).Member.Name;
-        }
+            // nullチェック
+            if (func == null)
+                throw new ArgumentNullException("func");
 
+            return ((MemberExpression)func.Body).Member.Name;
+        }
+        #endregion GetPropertyName
+
+        #region GetPropertyValue
         /// <summary>
         /// プロパティ値を取得します。
         /// </summary>
-        /// <param name="obj">対象オブジェクトを設定します。</param>
+        /// <param name="target">対象オブジェクトを設定します。</param>
         /// <param name="name">プロパティ名を設定します。</param>
         /// <returns>プロパティ値を返します。</returns>
+        //public static object GetPropertyValue(
+        //    [param: Required]object target,
+        //    [param: Required]string name
+        //    )
+        //{
+        //    // nullチェック
+        //    if (target == null)
+        //        throw new ArgumentNullException("target");
+        //    if (name == null)
+        //        throw new ArgumentNullException("name");
+        //
+        //    // プロパティ値を返します。
+        //    return target.GetType().GetProperty(name: name)
+        //        .GetValue(obj: target, index: null);
+        //}
+        /// <summary>
+        /// プロパティ値を取得します。
+        /// </summary>
+        /// <param name="target">対象オブジェクトを設定します。</param>
+        /// <param name="name">プロパティ名を設定します。</param>
+        /// <param name="bindingAttr">BindingFlagsを設定します。</param>
+        /// <returns>プロパティ値を返します。</returns>
         public static object GetPropertyValue(
-            object obj,
-            string name
+            [param: Required]object target,
+            [param: Required]string name,
+            BindingFlags bindingAttr
             )
         {
-            // プロパティ値を返します。
-            return obj.GetType().GetProperty(name: name)
-                .GetValue(obj: obj, index: null);
-        }
+            // nullチェック
+            if (target == null)
+                throw new ArgumentNullException("target");
+            if (name == null)
+                throw new ArgumentNullException("name");
 
+            // プロパティ値を返します。
+            return target.GetType().GetProperty(name: name, bindingAttr: bindingAttr)
+                .GetValue(obj: target, index: null);
+        }
+        #endregion GetPropertyValue
+
+        #region SetPropertyValue
         /// <summary>
         /// プロパティに値を設定します。
         /// </summary>
-        /// <param name="obj">対象オブジェクトを設定します。</param>
+        /// <param name="target">対象オブジェクトを設定します。</param>
         /// <param name="name">プロパティ名を設定します。</param>
-        /// <param name="value">値を設定します。</param>
+        /// <param name="value">値(null可)を設定します。</param>
+        //public static void SetPropertyValue(
+        //    [param: Required]object target,
+        //    [param: Required]string name,
+        //    object value
+        //    )
+        //{
+        //    // nullチェック
+        //    if (target == null)
+        //        throw new ArgumentNullException("target");
+        //    if (name == null)
+        //        throw new ArgumentNullException("name");
+        //
+        //    // プロパティに値を設定します。
+        //    target.GetType().GetProperty(name: name)
+        //        .SetValue(obj: target, value: value);
+        //}
+        /// <summary>
+        /// プロパティに値を設定します。
+        /// </summary>
+        /// <param name="target">対象オブジェクトを設定します。</param>
+        /// <param name="name">プロパティ名を設定します。</param>
+        /// <param name="value">値(null可)を設定します。</param>
+        /// <param name="bindingAttr">BindingFlagsを設定します。</param>
         public static void SetPropertyValue(
-            object obj,
-            string name,
-            object value
+            [param: Required]object target,
+            [param: Required]string name,
+            object value,
+            BindingFlags bindingAttr
             )
         {
-            // プロパティに値を設定します。
-            obj.GetType().GetProperty(name: name)
-                .SetValue(obj: obj, value: value);
-        }
+            // nullチェック
+            if (target == null)
+                throw new ArgumentNullException("target");
+            if (name == null)
+                throw new ArgumentNullException("name");
 
+            // プロパティに値を設定します。
+            target.GetType().GetProperty(name: name, bindingAttr: bindingAttr)
+                .SetValue(obj: target, value: value);
+        }
+        #endregion SetPropertyValue
+
+        #region GetClassPropertys
         /// <summary>
         /// クラスのプロパティ名一覧を取得します。
         /// </summary>
         /// <param name="typeClass">クラスタイプを設定します。</param>
         /// <returns>プロパティ名一覧を返します。</returns>
-        public static string[] GetClassPropertys<TClass>(
-            ) where TClass : class
+        //public static string[] GetClassPropertys(
+        //    [param: Required]Type classType
+        //    )
+        //{
+        //    // nullチェック
+        //    if (classType == null)
+        //        throw new ArgumentNullException("classType");
+
+        //    // プロパティ名一覧を返します。
+        //    return classType.GetProperties()
+        //        .Select(x => x.Name)
+        //        .ToArray();
+        //}
+        /// <summary>
+        /// クラスのプロパティ名一覧を取得します。
+        /// </summary>
+        /// <param name="typeClass">クラスタイプを設定します。</param>
+        /// <param name="bindingAttr">BindingFlagsを設定します。</param>
+        /// <returns>プロパティ名一覧を返します。</returns>
+        public static string[] GetClassPropertys(
+            [param: Required]Type classType,
+            BindingFlags bindingAttr
+            )
         {
+            // nullチェック
+            if (classType == null)
+                throw new ArgumentNullException("classType");
+
             // プロパティ名一覧を返します。
-            return typeof(TClass).GetProperties()
+            return classType.GetProperties(bindingAttr: bindingAttr)
                 .Select(x => x.Name)
                 .ToArray();
         }
+        #endregion GetClassPropertys
 
+        #region GetClassMethods
         /// <summary>
         /// クラスのメソッド名一覧を取得します。
         /// </summary>
+        /// <param name="classType">クラスタイプを設定します。</typeparam>
         /// <returns>メソッド名一覧を返します。</returns>
-        public static string[] GetClassMethods<TClass>(
-            ) where TClass : class
+        //public static string[] GetClassMethods(
+        //    [param: Required]Type classType
+        //    )
+        //{
+        //    // nullチェック
+        //    if (classType == null)
+        //        throw new ArgumentNullException("classType");
+
+        //    return classType.GetMethods()
+        //        .Select(x => x.Name)
+        //        .ToArray();
+        //}
+        /// <summary>
+        /// クラスのメソッド名一覧を取得します。
+        /// </summary>
+        /// <param name="classType">クラスタイプを設定します。</typeparam>
+        /// <param name="bindingAttr">BindingFlagsを設定します。</param>
+        /// <returns>メソッド名一覧を返します。</returns>
+        public static string[] GetClassMethods(
+            [param: Required]Type classType,
+            BindingFlags bindingAttr
+            )
         {
-            return typeof(TClass).GetMethods()
+            // nullチェック
+            if (classType == null)
+                throw new ArgumentNullException("classType");
+
+            return classType.GetMethods(bindingAttr: bindingAttr)
                 .Select(x => x.Name)
                 .ToArray();
         }
+        #endregion GetClassMethods
 
+        #region CopyPropertyValues
         /// <summary>
         /// コピー元オブジェクトのプロパティ値を
         /// コピー先オブジェクトのプロパティに設定します。
@@ -96,12 +224,19 @@ namespace Utility
         /// <param name="source">コピー元</param>
         /// <param name="dest">コピー先</param>
         /// <param name="typeMatchedOnly">対象を同一タイプのみとします。</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public static void CopyPropertyValues(
             [param: Required]object source,
             [param: Required]object dest,
             bool typeMatchedOnly = false
             )
         {
+            // nullチェック
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (dest == null)
+                throw new ArgumentNullException("dest");
+
             // タイプを取得します。
             var sType = source.GetType();
             var dType = dest.GetType();
@@ -160,5 +295,6 @@ namespace Utility
                 }
             }
         }
+        #endregion CopyPropertyValues
     }
 }

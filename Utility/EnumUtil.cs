@@ -7,32 +7,38 @@ namespace Utility
     /// 列挙型ユーティリティ
     /// </summary>
     [Utility.Developer(name: "tokusan1015")]
-    public class EnumUtil
+    public static class EnumUtil
     {
         /// <summary>
         /// 列挙型定義テキスト一覧を取得します。
         /// </summary>
-        /// <param name="enmType">列挙型タイプを設定します。</param>
+        /// <param name="enumType">列挙型タイプを設定します。</param>
         /// <returns>定義テキスト一覧を返します。</returns>
         public static string[] GetEnumNames(
-            [param: Required]Type enmType
+            [param: Required]Type enumType
             )
         {
+            // nullチェック
+            if (enumType == null) throw new ArgumentNullException("enumType");
+
             // 列挙型定義テキスト一覧を返します。
-            return Enum.GetNames(enmType);
+            return Enum.GetNames(enumType);
         }
 
         /// <summary>
         /// 列挙型値一覧を取得します。
         /// </summary>
-        /// <param name="data">列挙型タイプを設定します。</param>
+        /// <param name="enumType">列挙型タイプを設定します。</param>
         /// <returns>列挙型定数一覧を返します。</returns>
         public static Array GetEnumValues(
-            [param: Required]Type enmType
+            [param: Required]Type enumType
             )
         {
+            // nullチェック
+            if (enumType == null) throw new ArgumentNullException("enumType");
+
             // 列挙型定数一覧を返します
-            return Enum.GetValues(enmType);
+            return Enum.GetValues(enumType);
         }
 
         /// <summary>
@@ -48,6 +54,10 @@ namespace Utility
             string value
             )
         {
+            // nullチェック
+            if (enumType == null) throw new ArgumentNullException("enumType");
+            if (value == null) throw new ArgumentNullException("value");
+
             return Enum.Parse(
                 enumType: enumType,
                 value: value
@@ -61,11 +71,15 @@ namespace Utility
         /// <param name="enumType">列挙型のタイプを設定します。</param>
         /// <param name="value">評価する文字列を設定します。</param>
         /// <returns>存在する場合trueを返します。</returns>
-        public static bool Find(
+        public static bool EnumIsDefined(
             [param: Required]Type enumType,
             string value
             )
         {
+            // nullチェック
+            if (enumType == null) throw new ArgumentNullException("enumType");
+            if (value == null) throw new ArgumentNullException("value");
+
             return Enum.IsDefined(
                 enumType: enumType,
                 value: value

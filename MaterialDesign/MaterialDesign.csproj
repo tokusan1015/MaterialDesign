@@ -26,6 +26,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>7.3</LangVersion>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -109,6 +110,7 @@
     </Compile>
     <Compile Include="Converter\EnumBooleanConverter.cs" />
     <Compile Include="Converter\InverseBooleanConverter.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -152,6 +154,9 @@
     <PackageReference Include="Prism.Unity" Version="7.2.0.1422" />
     <PackageReference Include="ReactiveProperty">
       <Version>7.4.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Data.SQLite.Core">
+      <Version>1.0.113.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

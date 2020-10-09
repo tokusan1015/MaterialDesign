@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data.Linq;
 using System.Data.SQLite;
 using System.Linq;
@@ -25,6 +26,7 @@ namespace SQLiteAccessorBase
         /// デフォルトデータソース：./SQLiteDB.db
         /// </summary>
         /// <param name="dataSource">データソースを設定します。</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public SQLiteToLinqAccessorBase(
             string dataSource = ""
             ) : base(dataSource: dataSource)
@@ -53,16 +55,15 @@ namespace SQLiteAccessorBase
         /// コネクションを接続してから呼び出してください。
         /// </summary>
         /// <returns>バージョン情報を返します。</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public string GetVersion()
         {
 
-            /// <summary>
-            /// SQLiteのバージョンを取得するSQL文
-            /// </summary>
+            // SQLiteのバージョンを取得するSQL文
             const string SqlVersion = "select sqlite_version()";
 
             // 戻り値(バージョン情報が入ります。)
-            string result;
+            string result = "";
 
             try
             {
@@ -95,11 +96,16 @@ namespace SQLiteAccessorBase
         /// </summary>
         /// <param name="queryData">QueryDataを設定します。</param>
         /// <returns>処理件数を返します。</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public int CreateTable(
-            Utility.QueryData queryData,
+            [param: Required]Utility.QueryData queryData,
             bool makeSql = true
             )
         {
+            // nullチェック
+            if (queryData == null)
+                throw new ArgumentNullException("queryData");
+
             try
             {
                 int result = -1;
@@ -108,7 +114,7 @@ namespace SQLiteAccessorBase
                 using (SQLiteCommand cmd = new SQLiteCommand(this.Connection))
                 {
                     // SQL文を自動生成します。
-                    if (makeSql) queryData.MakeSQLiteCreateTableSQL();
+                    if (makeSql) queryData.MakeSqliteCreateTableSql();
 
                     // SQLiteCommandにQueryDataを設定します。
                     this.SetSQLiteCommandToQueryData(cmd: cmd, queryData: queryData);
@@ -140,7 +146,7 @@ namespace SQLiteAccessorBase
         /// <typeparam name="TTable">テーブル構造定義クラスを設定します。</typeparam>
         /// <param name="insertList">テーブル構造定義クラスリストを設定します。</param>
         public void Insert<TTable>(
-            IReadOnlyCollection<TTable> insertList
+            [param: Required]IReadOnlyCollection<TTable> insertList
             ) where TTable : class
         {
             try
@@ -172,11 +178,16 @@ namespace SQLiteAccessorBase
         /// </summary>
         /// <param name="queryData">QueryDataを設定します。</param>
         /// <param name="makeSql">SQL文の自動生成を設定します。</param>
-        public void InsertSQL(
-            IEnumerable<Utility.QueryData> queryDatas,
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        public void InsertSql(
+            [param: Required]IEnumerable<Utility.QueryData> queryDatas,
             bool makeSql = true
             )
         {
+            // nullチェック
+            if (queryDatas == null)
+                throw new ArgumentNullException("queryDatas");
+
             try
             {
                 // トランザクション
@@ -193,7 +204,7 @@ namespace SQLiteAccessorBase
                         foreach (var queryData in queryDatas)
                         {
                             // SQLを自動生成します。
-                            if (makeSql) queryData.MakeInsertSQL();
+                            if (makeSql) queryData.MakeInsertSql();
 
                             // SQLiteCommandにQueryDataを設定します。
                             this.SetSQLiteCommandToQueryData(cmd: cmd, queryData: queryData);
@@ -206,7 +217,7 @@ namespace SQLiteAccessorBase
                             {
                                 // ロールバックします。
                                 transaction.Rollback();
-                                throw new Exception($"レコード挿入に失敗しました。\n SQL={queryData.Query}\n");
+                                throw new InvalidOperationException($"レコード挿入に失敗しました。\n SQL={queryData.Query}\n");
                             }
                         }
                     }
@@ -246,9 +257,13 @@ namespace SQLiteAccessorBase
         /// <param name="action">レコードの検索関数(Linq to SQLite)を設定します。</param>
         /// <returns>結果をIQueryable形式で返します。</returns>
         public void Select<TTable>(
-            Action<Table<TTable>> action
+            [param: Required]Action<Table<TTable>> action
             ) where TTable : class
         {
+            // nullチェック
+            if (action == null)
+                throw new ArgumentNullException("action");
+
             try
             {
                 // ここにデータベース処理コードを書く
@@ -281,9 +296,13 @@ namespace SQLiteAccessorBase
         /// <typeparam name="TTable">テーブル構造定義クラスを設定します。</typeparam>
         /// <param name="action">レコードの更新関数を設定します。</param>
         public void Update<TTable>(
-            Action<Table<TTable>> action
+            [param: Required]Action<Table<TTable>> action
             ) where TTable : class
         {
+            // nullチェック
+            if (action == null)
+                throw new ArgumentNullException("action");
+
             try
             {
                 // ここにデータベース処理コードを書く
@@ -317,9 +336,13 @@ namespace SQLiteAccessorBase
         /// <typeparam name="TTable">テーブル構造定義クラスを設定します。</typeparam>
         /// <param name="func">レコードの削除関数を設定します。</param>
         public void Delete<TTable>(
-            Func<Table<TTable>, IQueryable<TTable>> func
+            [param: Required]Func<Table<TTable>, IQueryable<TTable>> func
             ) where TTable : class
         {
+            // nullチェック
+            if (func == null)
+                throw new ArgumentNullException("func");
+
             try
             {
                 // ここにデータベース処理コードを書く

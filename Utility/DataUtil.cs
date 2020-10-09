@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Linq;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Utility
@@ -48,80 +50,98 @@ namespace Utility
         /// QueryDataを生成します。
         /// </summary>
         /// <param name="query">クエリを設定します。</param>
-        private QueryData(
-            string query
+        public QueryData(
+            [param: Required]string query
             )
         {
-            this._query = query;
+            this._query = query ?? throw new ArgumentNullException("query");
         }
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="tableName">テーブル名を設定します。</param>
         /// <param name="param">パラメータ(ColumnParams)を設定します。</param>
-        private QueryData(
-            string query,
-            ColumnParam param
+        public QueryData(
+            [param: Required]string query,
+            [param: Required]ColumnParam param
             )
         {
-            this._query = query;
-            this._param = param;
+            this._query = query ?? throw new ArgumentNullException("query");
+            this._param = param ?? throw new ArgumentNullException("param");
         }
         #endregion コンストラクタ
 
         #region メソッド
         /// <summary>
-        /// パラメータ一覧をクリアします。
-        /// </summary>
-        public void Dispose_Param()
-        {
-            if (this._param != null)
-            {
-                this._param.Clear();
-                this._param = null;
-            }
-        }
-
-        /// <summary>
         /// パラメータを生成します。
-        /// テーブルクラスオブジェクトを設定してください。
         /// </summary>
-        /// <param name="obj">テーブルクラスオブジェクトを設定します。</param>
-        public void MakeParamater<TTable>(
-            object obj
-            ) where TTable : class
+        /// <param name="tableClassInstance">テーブルクラスのインスタンスを設定します。</param>
+        /// <param name="bindingAttr">BindingFlagsを設定します。</param>
+        public void MakeParamater(
+            [param: Required]object tableClassInstance,
+            BindingFlags bindingAttr
+            )
         {
+            // nullチェック
+            if (tableClassInstance == null)
+                throw new ArgumentNullException("tableClassInstance");
+
             // テーブル名が設定されていない場合
             if (this.TableName.Length <= 0)
             {
                 // テーブル名を取得・設定します。
-                this.TableName = Utility.AttributeTable.GetTableAttributeName<TTable>();
+                this.TableName = Utility.AttributeTable.GetTableName(
+                    tableClassType: tableClassInstance.GetType()
+                    );
             }
 
             // パラメータが設定されていない場合
             if (this._param == null)
             {
                 // パラメータを取得・設定します。
-                this._param = Utility.AttributeTable.GetColumnParam<TTable>(obj: obj);
+                this._param = Utility.AttributeTable
+                    .GetColumnParam(
+                        classType: tableClassInstance.GetType(),
+                        tableClassInstance: tableClassInstance,
+                        bindingAttr: bindingAttr
+                        );
             }
         }
         /// <summary>
         /// QueryDataのValueをUpdateします。
         /// </summary>
-        public void UpdateQueryDataValue<TTable>(object obj) where TTable : class
+        /// <param name="tableClassInstance">テーブル構造定義クラスのインスタンスを設定します。</param>
+        /// <param name="bindingAttr">BindingFlagsを設定します。</param>
+        public void UpdateQueryDataValue(
+            [param: Required]object tableClassInstance,
+            BindingFlags bindingAttr
+            )
         {
+            // nullチェック
+            if (tableClassInstance == null)
+                throw new ArgumentNullException("tableClassInstance");
+
             // パラメータが設定されていない場合は再設定します。
             if (this._param == null)
             {
                 // パラメータを取得・設定します。
-                this._param = Utility.AttributeTable.GetColumnParam<TTable>(obj: obj);
+                this._param = Utility.AttributeTable
+                    .GetColumnParam(
+                        classType: tableClassInstance.GetType(),
+                        tableClassInstance: tableClassInstance,
+                        bindingAttr: bindingAttr
+                        );
             }
 
             // 値を再設定します。
             foreach (var p in this._param)
             {
                 this._param[p.PropertyName].Value = 
-                    Utility.ObjectUtil.GetPropertyValue(obj: obj, p.PropertyName);
+                    Utility.ObjectUtil.GetPropertyValue(
+                        target: tableClassInstance,
+                        name: p.PropertyName,
+                        bindingAttr: bindingAttr
+                        );
             }
         }
         #endregion メソッド
@@ -136,7 +156,7 @@ namespace Utility
         {
             // Paramがnullの場合例外を発生します。
             if (this._param == null)
-                throw new ArgumentNullException("Param");
+                throw new InvalidOperationException("_param is null.");
 
             string result = "";
             var calist = this._param.Select(x => x.ColumnName).ToArray();
@@ -156,11 +176,11 @@ namespace Utility
         /// 生成されたSQL文は、Queryにも保存されます。
         /// </summary>
         /// <returns>生成したSQL文を返します。</returns>
-        public string MakeSQLiteCreateTableSQL()
+        public string MakeSqliteCreateTableSql()
         {
             // Paramがnullの場合例外を発生します。
             if (this._param == null)
-                throw new ArgumentNullException("Param");
+                throw new InvalidOperationException("_param is null.");
 
             // テーブル生成用SQL文字列
             var sb = new StringBuilder();
@@ -175,7 +195,7 @@ namespace Utility
             {
                 if (columnInfo.Value != null)
                 {
-                    var dt = columnInfo.ConvertDbType;
+                    var dt = columnInfo.ConvertDbtype;
                     var pk = columnInfo.IsPrimaryKey ? "PRIMARY KEY" : "";
                     var nn = !columnInfo.CanBeNull ? "NOT NULL" : "";
                     columns.Add($"[{columnInfo.ColumnName}] {dt} {pk} {nn}");
@@ -197,19 +217,26 @@ namespace Utility
         /// </summary>
         /// <param name="where">WHERE句を設定します。空文字は省略されます。</param>
         /// <param name="orderby">ORDERBY句を設定します。空文字は省略されます。</param>
-        /// <param name="limit">LIMITの設定を行います。負数は省略されます。</param>
-        /// <param name="offset">OFFSETの設定を行います。負数は省略されます。</param>
+        /// <param name="limit">LIMITの設定を行います。負数の場合は省略されます。</param>
+        /// <param name="offset">OFFSETの設定を行います。負数び場合は省略されます。</param>
         /// <returns>生成したSQL文を返します。</returns>
-        public string MakeSelectSQL(
-            string where = "",
-            string orderby = "",
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object[])")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object)")]
+        public string MakeSelectSql(
+            [param: Required]string where = "",
+            [param: Required]string orderby = "",
             int limit = -1,
             int offset = -1
             )
         {
-            // Paramがnullの場合例外を発生します。
+            // nullチェック
             if (this._param == null)
-                throw new ArgumentNullException("Param");
+                throw new InvalidOperationException("_param is null.");
+            if (where == null)
+                throw new ArgumentNullException("where");
+            if (orderby == null)
+                throw new ArgumentNullException("orderby");
 
             // SELECT {columnName[,columnName...]} FROM {tableName} {WHERE} {ORDERBY} {LIMIT} {OFFSET};
             const string SELECT = @"SELECT {1} FROM {0} {2} {3} {4} {5};";
@@ -219,20 +246,33 @@ namespace Utility
             string li = "";
             string of = "";
 
-            if (where.Length > 0) wh = $"WHERE {where}";
-            if (orderby.Length > 0) ob = $"ORDER BY {orderby}";
-            if (limit >= 0) li = $"LIMIT {limit}";
-            if (offset >= 0) of = $"OFFSET {offset}";
+            if (where.Length > 0)
+            {
+                wh = $"WHERE {where}";
+            }
+            if (orderby.Length > 0)
+            {
+                ob = $"ORDER BY {orderby}";
+            }
+            if (limit >= 0)
+            {
+                li = $"LIMIT {limit}";
+            }
+            if (offset >= 0)
+            {
+                of = $"OFFSET {offset}";
+            }
 
-            this._query = Utility.StringUtil.RemoveManySpace(string.Format(
-                SELECT,
-                this.TableName,         // {0}
-                this.MakeColumnNames(), // {1}
-                wh,                     // {2}
-                ob,                     // {3}
-                li,                     // {4}
-                of                      // {5}
-                ));
+            this._query = Utility.StringUtil.RemoveManySpace(
+                string.Format(
+                    SELECT,
+                    this.TableName,         // {0}
+                    this.MakeColumnNames(), // {1}
+                    wh,                     // {2}
+                    ob,                     // {3}
+                    li,                     // {4}
+                    of                      // {5}
+                    ));
 
             return this._query;
         }
@@ -242,11 +282,12 @@ namespace Utility
         /// 生成されたSQL文は、Queryにも保存されます。
         /// </summary>
         /// <returns>生成したSQL文を返します。</returns>
-        public string MakeInsertSQL()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object,System.Object)")]
+        public string MakeInsertSql()
         {
             // Paramがnullの場合例外を発生します。
             if (this._param == null)
-                throw new ArgumentNullException("Param");
+                throw new InvalidOperationException("_param is null.");
 
             const string INSERT = @"INSERT INTO {0}({1})VALUES({2});";
 
@@ -283,13 +324,17 @@ namespace Utility
         /// </summary>
         /// <param name="where">where句を設定します。</param>
         /// <returns>生成したSQL文を返します。</returns>
-        public string MakeUpdateSQL(
-            string where = ""
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object,System.Object)")]
+        public string MakeUpdateSql(
+            [param: Required]string where = ""
             )
         {
-            // Paramがnullの場合例外を発生します。
+            // nullチェック
             if (this._param == null)
-                throw new ArgumentNullException("Param");
+                throw new InvalidOperationException("_param is null.");
+            if (where == null)
+                throw new ArgumentNullException("where");
 
             // UPDATE テーブル名 SET 列名1=値1[,列名n=値n] WHERE 条件
             const string UPDATE = @"UPDATE {0} SET {1} WHERE {2};";
@@ -331,15 +376,19 @@ namespace Utility
         /// whereを設定しない場合はPrimaryKeyの直値が設定されます。(例.Id = @Id)
         /// 生成されたSQL文は、Queryにも保存されます。
         /// </summary>
-        /// <param name="where">where句を設定します。</param>
+        /// <param name="where">where句を設定します。WHERE文字を入れないで下さい。</param>
         /// <returns>生成したSQL文を返します。</returns>
-        public string MakeDeleteSQL(
-            string where = ""
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)")]
+        public string MakeDeleteSql(
+            [param: Required]string where = ""
             )
         {
-            // Paramがnullの場合例外を発生します。
+            // nullチェック
             if (this._param == null)
-                throw new ArgumentNullException("Param");
+                throw new InvalidOperationException("_param is null.");
+            if (where == null)
+                throw new ArgumentNullException("where");
 
             // UPDATE テーブル名 SET 列名1=値1[,列名n=値n] WHERE 条件
             const string DELETE = @"DELETE FROM {0} WHERE {1};";
@@ -401,8 +450,15 @@ namespace Utility
         /// コレクションにColumnInfoを追加します。
         /// </summary>
         /// <param name="columnInfo">ColumnInfoを設定します。</param>
-        public void Add(ColumnInfo columnInfo)
+        public void Add(
+            [param: Required]ColumnInfo columnInfo
+            )
         {
+            // nullチェック
+            if (columnInfo == null)
+                throw new ArgumentNullException("columnInfo");
+
+            // columnInfoを追加します。
             this.ColumnInfos.Add(item: columnInfo);
         }
         /// <summary>
@@ -417,8 +473,15 @@ namespace Utility
         /// </summary>
         /// <param name="columnName">カラム名を設定します。</param>
         /// <returns>存在する場合trueを返します。</returns>
-        public bool ContainsKey(string columnName)
+        public bool ContainsKey(
+            [param: Required]string columnName
+            )
         {
+            // nullチェック
+            if (columnName == null)
+                throw new ArgumentNullException("columnName");
+
+            // 存在チェックを行い結果を返します。
             return this.ColumnInfos.Any(x => x.ColumnName == columnName);
         }
         /// <summary>
@@ -427,8 +490,15 @@ namespace Utility
         /// </summary>
         /// <param name="columnName">カラム名を指定します。</param>
         /// <returns>ColumnInfoを返します。</returns>
-        public ColumnInfo GetColumnInfo(string columnName)
+        public ColumnInfo GetColumnInfo(
+            [param: Required]string columnName
+            )
         {
+            // nullチェック
+            if (columnName == null)
+                throw new ArgumentNullException("columnName");
+
+            // カラム名に対応するColumnIndoを返します。
             return this.ColumnInfos
                 .Where(x => x.ColumnName == columnName)
                 .FirstOrDefault();
@@ -438,8 +508,15 @@ namespace Utility
         /// </summary>
         /// <param name="columnName">カラム名を設定します。</param>
         /// <returns>成功した場合trueを返します。</returns>
-        public bool Remove(string columnName)
+        public bool Remove(
+            [param: Required]string columnName
+            )
         {
+            // nullチェック
+            if (columnName == null)
+                throw new ArgumentNullException("columnName");
+
+            // 指定したカラム名をコレクションから削除し結果を返します。
             return this.ColumnInfos
                 .Remove(this.GetColumnInfo(columnName: columnName));
         }
@@ -449,6 +526,7 @@ namespace Utility
         /// <returns></returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
+            // 反復処理する列挙子を返します。
             return this.ColumnInfos.GetEnumerator();
         }
         /// <summary>
@@ -457,11 +535,127 @@ namespace Utility
         /// <returns></returns>
         public IEnumerator<ColumnInfo> GetEnumerator()
         {
+            // 反復処理する列挙子を返します。
             return this.ColumnInfos.GetEnumerator();
         }
         #endregion メソッド
     }
     #endregion ColumnParams
+
+    #region ConvertTextData
+    /// <summary>
+    /// 旧名称から新名称に変換する辞書クラスです。
+    /// </summary>
+    public class ConvertDictionary
+    {
+        /// <summary>
+        /// 文字変換辞書データクラス
+        /// </summary>
+        class ConvertData
+        {
+            /// <summary>
+            /// 旧名称
+            /// </summary>
+            public string OldName { get; private set; }
+            /// <summary>
+            /// 新名称
+            /// </summary>
+            public string NewName { get; private set; }
+            /// <summary>
+            /// コンストラクタ
+            /// </summary>
+            /// <param name="oldName">旧名称</param>
+            /// <param name="newName">新名称</param>
+            public ConvertData(
+                [param: Required]string oldName,
+                [param: Required]string newName
+                )
+            {
+                this.OldName = oldName ?? throw new ArgumentNullException("oldName");
+                this.NewName = newName ?? throw new ArgumentNullException("newName");
+            }
+        }
+
+        #region プロパティ
+        /// <summary>
+        /// 辞書データ
+        /// </summary>
+        private List<ConvertData> TextDatas { get; } = new List<ConvertData>();
+        #endregion プロパティ
+
+        /// <summary>
+        /// 辞書に変換データを追加します。
+        /// </summary>
+        /// <param name="oldName">旧名称</param>
+        /// <param name="newName">新名称</param>
+        public void Add(
+            [param: Required]string oldName,
+            [param: Required]string newName
+            )
+        {
+            // nullチェック
+            if (oldName == null)
+                throw new ArgumentNullException("oldName");
+            if (oldName.Length <= 0)
+                throw new ArgumentException("oldName is empty.");
+            if (newName == null)
+                throw new ArgumentNullException("newName");
+            if (newName.Length <= 0)
+                throw new ArgumentException("newName is empty.");
+
+            // 存在チェックを行います。
+            if (ContainsOldName(oldName: oldName))
+                throw new ArithmeticException($"'{oldName}' already exists.");
+
+            // データを辞書に追加します。
+            this.TextDatas.Add(
+                item: new ConvertData(oldName: oldName, newName: newName)
+                );
+        }
+
+        /// <summary>
+        /// 辞書に旧名称が存在するか調べます。
+        /// </summary>
+        /// <param name="oldName">旧名称</param>
+        /// <returns>存在する場合trueを返します。</returns>
+        public bool ContainsOldName(
+            [param: Required]string oldName
+            )
+        {
+            // nullチェック
+            if (oldName == null)
+                throw new ArgumentNullException("oldName");
+            if (oldName.Length <=0)
+                throw new ArgumentNullException("oldName");
+
+            // 存在チェックを行い結果を返します。
+            return this.TextDatas
+                .Any(x => x.OldName == oldName);
+        }
+
+        /// <summary>
+        /// 旧名称を新名称に変換します。
+        /// </summary>
+        /// <param name="oldName">旧名称を設定します。</param>
+        /// <returns>新名称を返します。</returns>
+        public string Convert(
+            [param: Required]string oldName 
+            )
+        {
+            // nullチェック
+            if (oldName == null)
+                throw new ArgumentNullException("oldName");
+            if (oldName.Length <= 0)
+                throw new ArgumentNullException("oldName");
+
+            // 変換を行い結果を返します。
+            return this.TextDatas
+                .Where(x => x.OldName == oldName)
+                .Select(x => x.NewName)
+                .FirstOrDefault();
+        }
+    }
+    #endregion ConvertTextData
 
     #region ColumnInfo
     /// <summary>
@@ -480,7 +674,7 @@ namespace Utility
         /// <summary>
         /// DbType変換リスト
         /// </summary>
-        public ICollection<KeyValuePair<string, string>> ConvertList { get; private set; } = null;
+        public ConvertDictionary ConvertDictionary { get; private set; } = null;
         /// <summary>
         /// クラスのプロパティ名
         /// </summary>
@@ -492,11 +686,11 @@ namespace Utility
         /// <summary>
         /// カラムのDBタイプ
         /// </summary>
-        public string DbType { get; set; }
+        public string Dbtype { get; set; }
         /// <summary>
         /// 変換DBタイプ
         /// </summary>
-        public string ConvertDbType => this.DbTypeConverter(this.DbType);
+        public string ConvertDbtype => this.DbtypeConverter(this.Dbtype);
         /// <summary>
         /// カラムのPrimaryKeyフラグ
         /// </summary>
@@ -521,8 +715,9 @@ namespace Utility
         /// convertListは、DbTypeのstring => string の変換を行います。
         /// convertListがnullの場合は、SQLite用のコンバータがセットされます。
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public ColumnInfo(
-            ICollection<KeyValuePair<string, string>> convertList = null
+            ConvertDictionary convertList = null
             )
         {
             // 指定されない場合は、自動生成します。
@@ -530,22 +725,31 @@ namespace Utility
             {
                 this.MakeConvertList();
             }
+            else
+            {
+                this.ConvertDictionary = convertList;
+            }
+
         }
         #endregion コンストラクタ
 
         #region メソッド
         /// <summary>
-        /// コンバータリストを使用してDbTypeを変換します。
+        /// 変換辞書を使用してDbTypeを変換します。
         /// </summary>
         /// <param name="dbType">DbTypeを設定します。</param>
-        /// <returns>コンバータリストを使用して変換したDbTypeを返します。</returns>
-        public string DbTypeConverter(string dbType)
+        /// <returns>変換辞書を使用して変換したDbTypeを返します。</returns>
+        public string DbtypeConverter(
+            [param: Required]string dbType
+            )
         {
-            var result = this.ConvertList
-                .Where(x => x.Key == dbType)
-                .Select(x => x.Value)
-                .FirstOrDefault();
-            if (result.Length <= 0) throw new ArgumentOutOfRangeException("dbType");
+            // nullチェック
+            if (dbType == null)
+                throw new ArgumentNullException("dbType");
+
+            var result = this.ConvertDictionary.Convert(dbType);
+            if (result == null)
+                throw new ArgumentOutOfRangeException("dbType");
 
             return result;
         }
@@ -555,32 +759,32 @@ namespace Utility
         /// </summary>
         private void MakeConvertList()
         {
-            this.ConvertList = new List<KeyValuePair<string, string>>
-            {
-                // INTEGER
-                new KeyValuePair<string, string>(key: "INTEGER", value: "INTEGER"),
-                new KeyValuePair<string, string>(key: "INT", value: "INTEGER"),
-                new KeyValuePair<string, string>(key: "TINYINT", value: "INTEGER"),
-                new KeyValuePair<string, string>(key: "SMALLINT", value: "INTEGER"),
-                new KeyValuePair<string, string>(key: "MEDIUMINT", value: "INTEGER"),
-                new KeyValuePair<string, string>(key: "BIGINT", value: "INTEGER"),
-                // TEXT
-                new KeyValuePair<string, string>(key: "TEXT", value: "TEXT"),
-                new KeyValuePair<string, string>(key: "NVARCHAR", value: "TEXT"),
-                new KeyValuePair<string, string>(key: "VARCHAR", value: "TEXT"),
-                new KeyValuePair<string, string>(key: "CHARACTER", value: "TEXT"),
-                new KeyValuePair<string, string>(key: "CLOB", value: "TEXT"),
-                // REAL
-                new KeyValuePair<string, string>(key: "REAL", value: "REAL"),
-                new KeyValuePair<string, string>(key: "DOUBLE", value: "REAL"),
-                new KeyValuePair<string, string>(key: "FLOAT", value: "REAL"),
-                // NUMERIC
-                new KeyValuePair<string, string>(key: "NUMERIC", value: "NUMERIC"),
-                new KeyValuePair<string, string>(key: "DECIMAL", value: "NUMERIC"),
-                new KeyValuePair<string, string>(key: "BOOLEAN", value: "NUMERIC"),
-                new KeyValuePair<string, string>(key: "DATE", value: "NUMERIC"),
-                new KeyValuePair<string, string>(key: "DATETIME", value: "NUMERIC")
-            };
+            // 変換リストを生成します。
+            this.ConvertDictionary = new ConvertDictionary();
+
+            // INTEGER
+            this.ConvertDictionary.Add(oldName: "INTEGER", newName: "INTEGER");
+            this.ConvertDictionary.Add(oldName: "INT", newName: "INTEGER");
+            this.ConvertDictionary.Add(oldName: "TINYINT", newName: "INTEGER");
+            this.ConvertDictionary.Add(oldName: "SMALLINT", newName: "INTEGER");
+            this.ConvertDictionary.Add(oldName: "MEDIUMINT", newName: "INTEGER");
+            this.ConvertDictionary.Add(oldName: "BIGINT", newName: "INTEGER");
+            // TEXT
+            this.ConvertDictionary.Add(oldName: "TEXT", newName: "TEXT");
+            this.ConvertDictionary.Add(oldName: "NVARCHAR", newName: "TEXT");
+            this.ConvertDictionary.Add(oldName: "VARCHAR", newName: "TEXT");
+            this.ConvertDictionary.Add(oldName: "CHARACTER", newName: "TEXT");
+            this.ConvertDictionary.Add(oldName: "CLOB", newName: "TEXT");
+            // REAL
+            this.ConvertDictionary.Add(oldName: "REAL", newName: "REAL");
+            this.ConvertDictionary.Add(oldName: "DOUBLE", newName: "REAL");
+            this.ConvertDictionary.Add(oldName: "FLOAT", newName: "REAL");
+            // NUMERIC
+            this.ConvertDictionary.Add(oldName: "NUMERIC", newName: "NUMERIC");
+            this.ConvertDictionary.Add(oldName: "DECIMAL", newName: "NUMERIC");
+            this.ConvertDictionary.Add(oldName: "BOOLEAN", newName: "NUMERIC");
+            this.ConvertDictionary.Add(oldName: "DATE", newName: "NUMERIC");
+            this.ConvertDictionary.Add(oldName: "DATETIME", newName: "NUMERIC");
         }
         #endregion メソッド
     }
@@ -620,49 +824,56 @@ namespace Utility
     public class DataPlus<TType> where TType : IComparable
     {
         /// <summary>
-        /// データ
+        /// 設定値を表します。
         /// </summary>
-        private TType _data { get; set; }
+        private TType _value { get; set; }
         /// <summary>
-        /// 初期データ
+        /// オリジナル値を表します。
         /// </summary>
         private TType _original { get; set; }
         /// <summary>
-        /// オリジナルデータ
+        /// オリジナル値を取得します。
         /// </summary>
         public TType Original
         {
             get { return this._original; }
         }
         /// <summary>
-        /// データを返します。
+        /// 設定値を取得/設定します。
         /// </summary>
         public TType Value
         {
-            get { return this._data; }
+            get { return this._value; }
             set
             {
-                if (this._data.CompareTo(value) != 0)
+                if (this._value.CompareTo(value) != 0)
                 {
-                    this._data = value;
+                    this._value = value;
                 }
             }
         }
         /// <summary>
-        /// 修正が有った場合trueを返します。
+        /// 変更が有った場合trueを返します。
         /// </summary>
         public bool IsChanged
         {
-            get { return this._data.CompareTo(this._original) != 0; }
+            get { return this._value.CompareTo(this._original) != 0; }
         }
         /// <summary>
-        /// コンストラクタ
+        /// オリジナルデータを設定します。
+        /// 同時にValueも変更されます。
         /// </summary>
-        /// <param name="original">オリジナルデータ</param>
-        public DataPlus(TType original)
+        /// <param name="originalData">オリジナルデータを設定します。</param>
+        public void SetOriginalData(
+            [param: Required]TType originalData
+            )
         {
-            this._original = original;
-            this._data = original;
+            // nullチェック
+            if (originalData == null)
+                throw new ArgumentNullException("originalData");
+
+            this._original = originalData;
+            this._value = originalData;
         }
     }
     #endregion DataPlus

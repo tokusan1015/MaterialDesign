@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Reactive.Disposables;
+using System.Reflection;
 
 namespace RPUtility
 {
@@ -22,6 +23,7 @@ namespace RPUtility
         /// コンストラクタ
         /// </summary>
         /// <param name="objectParam">オブジェクトパラメータを設定します。</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public ControlInfoEventArgs(
             object param = null
             )
@@ -39,7 +41,7 @@ namespace RPUtility
         AttributeTargets.Property,
         AllowMultiple = false,
         Inherited = false)]
-    public class ControlInfoAttribute : Attribute
+    public sealed class ControlInfoAttribute : Attribute
     {
         /// <summary>
         /// タイトル
@@ -48,7 +50,7 @@ namespace RPUtility
         /// <summary>
         /// コマンド
         /// </summary>
-        public string Command { get; private set; } = "";
+        public string CommandText { get; private set; } = "";
         /// <summary>
         /// グループ番号
         /// </summary>
@@ -70,20 +72,21 @@ namespace RPUtility
         /// </summary>
         /// <param name="displeyName">表示するタイトルを設定します。</param>
         /// <param name="groupNo">グループ番号を設定します。</param>
-        /// <param name="command">動作を決めるコマンドを設定します。</param>
+        /// <param name="commandText">動作を決めるコマンドを設定します。</param>
         /// <param name="isEnable">コントロールの選択可否を設定します。</param>
         /// <param name="isVisible">コントロールの表示非表示を設定します。</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public ControlInfoAttribute(
             string displeyName,
             int groupNo = 0,
-            string command = "",
+            string commandText = "",
             bool isEnable = true,
             bool isVisible = true
             )
         {
             this.DispleyName = displeyName;
             this.GroupNo = groupNo;
-            this.Command = command;
+            this.CommandText = commandText;
             this.IsEnable = isEnable;
             this.IsVisible = isVisible;
         }
@@ -93,43 +96,36 @@ namespace RPUtility
     /// <summary>
     /// コントロールの共通基底情報
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1012:AbstractTypesShouldNotHaveConstructors")]
     [Utility.Developer(name: "tokusan1015")]
     public abstract class ControlInfoBase
     {
-        #region イベントハンドラ
-        /// <summary>
-        /// クリックイベントハンドラ
-        /// </summary>
-        protected event EventHandler<ControlInfoEventArgs> OnClicked;
-        #endregion イベントハンドラ
-
-        #region Bindingコマンド
-        /// <summary>
-        /// Bindingコマンド(Click)
-        /// </summary>
-        public DelegateCommand Clicked { get; protected set; }
-        #endregion Bindingコマンド
-
         #region プロパティ
+        /// <summary>
+        /// プロパティ名を表します。
+        /// </summary>
+        public string PropertyName { get; set; } = "";
         /// <summary>
         /// グループNo.
         /// View単位でグループ化します。
         /// </summary>
-        public int GroupNo { get; protected set; } = -1;
+        public int GroupNo { get; set; } = -1;
         /// <summary>
         /// コマンド
         /// </summary>
-        public string Command { get; protected set; } = string.Empty;
+        public string CommandText { get; protected set; } = string.Empty;
         /// <summary>
         /// 表示非表示
         /// true=表示, false=非表示
         /// </summary>
-        public ReactivePropertySlim<bool> IsVisible { get; private set; } = null;
+        public ReactivePropertySlim<bool> IsVisible { get; private set; } =
+            new ReactivePropertySlim<bool>();
         /// <summary>
         /// 有効無効
         /// true=有効, false=無効
         /// </summary>
-        public ReactivePropertySlim<bool> IsEnable { get; private set; } = null;
+        public ReactivePropertySlim<bool> IsEnable { get; private set; } =
+            new ReactivePropertySlim<bool>();
         #endregion プロパティ
 
         #region コンストラクタ
@@ -138,44 +134,39 @@ namespace RPUtility
         /// </summary>
         public ControlInfoBase()
         {
-            this.IsEnable = new ReactivePropertySlim<bool>();
-            this.IsVisible = new ReactivePropertySlim<bool>();
 
-            // Bindingコマンド設定
-            this.Clicked = new DelegateCommand(() =>
-            {
-                // クリックイベント発行
-                this.OnClicked?.Invoke(sender: this, e: new ControlInfoEventArgs(param: this.Command));
-            });
         }
         #endregion コンストラクタ
 
-        #region デストラクタ
-        /// <summary>
-        /// デストラクタ
-        /// </summary>
-        ~ControlInfoBase()
-        {
-            if (this.IsEnable != null)
-            {
-                this.IsEnable.Dispose();
-                this.IsEnable = null;
-            }
-            if (this.IsVisible != null)
-            {
-                this.IsVisible.Dispose();
-                this.IsVisible = null;
-            }
-        }
-        #endregion デストラクタ
-
         #region publicメソッド
+        /// <summary>
+        /// 対象クラスのプロパティを取得します。
+        /// </summary>
+        /// <param name="classType">クラスタイプを設定します。</param>
+        /// <param name="propertyName">プロパティ名を設定します。</param>
+        /// <returns>設定した属性インスタンスが返ります。</returns>
+        protected object GetPropertyAttribute(
+            [param: Required]Type classType,
+            [param: Required]string propertyName
+            )
+        {
+            return Utility.AttributeUtil.GetPropertyAttribute(
+                attrType: typeof(ControlInfoAttribute),
+                classType: classType,
+                propertyName: propertyName,
+                bindingAttr: Common.ConstDatas.ControlInfoBindingFlags
+                );
+        }
+
         /// <summary>
         /// 指定グループのIsEnableを反転します。
         /// グループ番号が負数の場合は無条件で反転します。
         /// </summary>
         /// <param name="groupNo">グループ番号を設定します。</param>
-        public void InverseEnable(int groupNo = -1)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        public void InverseEnable(
+            int groupNo = -1
+            )
         {
             if (groupNo < 0 || this.GroupNo == groupNo)
                 this.IsEnable.Value = !this.IsEnable.Value;
@@ -184,6 +175,7 @@ namespace RPUtility
         /// 指定グループのIsVisibleを反転します。
         /// </summary>
         /// <param name="groupNo">グループ番号を設定します。</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public void InverseVisible(int groupNo = -1)
         {
             if (groupNo < 0 || this.GroupNo == groupNo)
@@ -208,12 +200,27 @@ namespace RPUtility
     [Utility.Developer(name: "tokusan1015")]
     public sealed class ControlInfo<T> : ControlInfoBase
     {
+        #region Bindingコマンド
+        /// <summary>
+        /// Bindingコマンド(Click)
+        /// *** publicでないと動きません。***
+        /// </summary>
+        public DelegateCommand Dcommand { get; set; }
+        #endregion Bindingコマンド
+
         #region イベントハンドラ
+        /// <summary>
+        /// コマンドイベントハンドラ
+        /// </summary>
+        private event EventHandler<ControlInfoEventArgs> OnDcommand;
         /// <summary>
         /// プロパティチェンジイベントハンドラ
         /// </summary>
-        public event EventHandler<ControlInfoEventArgs> OnPropertyChanged;
+        private event EventHandler<ControlInfoEventArgs> OnPropertyChanged;
         #endregion イベントハンドラ
+
+        #region プロパティ
+        #endregion プロパティ
 
         #region Bindingプロパティ
         /// <summary>
@@ -232,36 +239,21 @@ namespace RPUtility
         /// </summary>
         public ControlInfo()
         {
+            // ReactivePropertySlim生成
             this.Title = new ReactivePropertySlim<string>();
+
+            //　nullの場合のみ生成
+            if (this.Dcommand == null)
+            {
+                // Bindingコマンド設定
+                this.Dcommand = new DelegateCommand(() =>
+                {
+                    // クリックイベント発行
+                    this.OnDcommand?.Invoke(sender: this, e: new ControlInfoEventArgs(param: this.CommandText));
+                });
+            }
         }
         #endregion コンストラクタ
-
-        #region デストラクタ
-        /// <summary>
-        /// デストラクタ
-        /// </summary>
-        ~ControlInfo()
-        {
-            this.Dispose_RP();
-            GC.SuppressFinalize(obj: this);
-        }
-        /// <summary>
-        /// 破棄処理
-        /// </summary>
-        private void Dispose_RP()
-        {
-            if (this.Data != null)
-            {
-                this.Data.Dispose();
-                this.Data = null;
-            }
-            if (this.Title != null)
-            {
-                this.Title.Dispose();
-                this.Title = null;
-            }
-        }
-        #endregion デストラクタ
 
         #region publicメソッド
         /// <summary>
@@ -276,26 +268,30 @@ namespace RPUtility
         /// dataのDisplayName属性のTitleが設定されます。
         /// cibListは、自動的に追加されます。
         /// </summary>
-        /// <typeparam name="TViewModel">属性を取得する型を指定します。</typeparam>
+        /// <param name="viewModelType">属性を取得するクラスの型を指定します。</param>
         /// <param name="cibList">CIBListを設定します。</param>
         /// <param name="data">データを設定します。</param>
-        /// <param name="onClicked">クリックEventHandlerを設定します。</param>
+        /// <param name="onDcommand">コマンドEventHandlerを設定します。</param>
         /// <param name="onPropertyChangd">プロパティチェンジEventHandlerを設定します。</param>
-        /// <param name="isEnable">有効無効を設定します。</param>
-        /// <param name="isVisible">表示非表示を設定します。</param>
-        public void SetAll<TViewModel>(
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        public void SetAll(
+            [param: Required]Type viewModelType,
             [param: Required]List<ControlInfoBase> cibList,
             [param: Required]Utility.DataAndName<ReactiveProperty<T>> data,
-            EventHandler<ControlInfoEventArgs> onClicked = null,
-            EventHandler<ControlInfoEventArgs> onPropertyChangd = null,
-            bool isEnable = true,
-            bool isVisible = true
-            ) where TViewModel : class
+            EventHandler<ControlInfoEventArgs> onDcommand = null,
+            EventHandler<ControlInfoEventArgs> onPropertyChangd = null
+            )
         {
             // 引数チェック
-            if (cibList == null || data == null)
-                throw new ArgumentNullException("cibListまたはdataは、nullにすることはできません。");
+            if (cibList == null)
+                throw new ArgumentNullException("cibList");
+            if (data == null)
+                throw new ArgumentNullException("data");
 
+            // プロパティ名を保存します。
+            this.PropertyName = data.PropertyName;
+           
             if (data.Data != null)
             {
                 // プロパティ設定
@@ -306,48 +302,43 @@ namespace RPUtility
                     // プロパティチェンジイベント発行
                     this.OnPropertyChanged?.Invoke(
                         sender: this,
-                        e: new ControlInfoEventArgs(param: this.Data.ToString())
+                        e: new ControlInfoEventArgs(param: this.Data.Value.ToString())
                         );
                 });
             }
 
             // タイトルを設定します。
-            this.Title.Value = Utility.AttributeUtil
-                .GetPropertyAttribute<ControlInfoAttribute>(
-                    classType: typeof(TViewModel),
-                    propertyName: data.PropertyName
-                    ).DispleyName;
+            this.Title.Value = (this.GetPropertyAttribute(
+                    classType: viewModelType,
+                    propertyName: this.PropertyName
+                    ) as ControlInfoAttribute).DispleyName;
 
             // コマンドを設定します。
-            this.Command = Utility.AttributeUtil
-                .GetPropertyAttribute<ControlInfoAttribute>(
-                    classType: typeof(TViewModel),
-                    propertyName: data.PropertyName
-                    ).Command;
+            this.CommandText = (this.GetPropertyAttribute(
+                    classType: viewModelType,
+                    propertyName: this.PropertyName
+                    ) as ControlInfoAttribute).CommandText;
 
             // グループ番号を設定します。
-            this.GroupNo = Utility.AttributeUtil
-                .GetPropertyAttribute<ControlInfoAttribute>(
-                    classType: typeof(TViewModel),
-                    propertyName: data.PropertyName
-                    ).GroupNo;
+            this.GroupNo = (this.GetPropertyAttribute(
+                    classType: viewModelType,
+                    propertyName: this.PropertyName
+                    ) as ControlInfoAttribute).GroupNo;
 
             // 選択可否を設定します。
-            this.IsEnable.Value = Utility.AttributeUtil
-                .GetPropertyAttribute<ControlInfoAttribute>(
-                    classType: typeof(TViewModel),
-                    propertyName: data.PropertyName
-                    ).IsEnable;
+            this.IsEnable.Value = (this.GetPropertyAttribute(
+                    classType: viewModelType,
+                    propertyName: this.PropertyName
+                    ) as ControlInfoAttribute).IsEnable;
 
             // 選択可否を設定します。
-            this.IsVisible.Value = Utility.AttributeUtil
-                .GetPropertyAttribute<ControlInfoAttribute>(
-                    classType: typeof(TViewModel),
-                    propertyName: data.PropertyName
-                    ).IsVisible;
+            this.IsVisible.Value = (this.GetPropertyAttribute(
+                    classType: viewModelType,
+                    propertyName: this.PropertyName
+                    ) as ControlInfoAttribute).IsVisible;
 
             // クリックイベントを設定します。
-            if (onClicked != null) this.OnClicked += onClicked;
+            if (onDcommand != null) this.OnDcommand += onDcommand;
 
             // プロパティ変更イベントを設定します。
             if (onPropertyChangd != null) this.OnPropertyChanged += onPropertyChangd;
@@ -355,6 +346,7 @@ namespace RPUtility
             // コントロールリストを設定します。
             if (cibList != null) cibList.Add(this);
         }
+        
         /// <summary>
         /// 入力エラーが存在する場合trueを返します。
         /// 必要であるならば検証項目を追加します。

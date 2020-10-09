@@ -10,7 +10,7 @@ namespace Utility
     /// ファイルユーティリティ
     /// </summary>
     [Utility.Developer(name: "tokusan1015")]
-    public class FileUtil
+    public static class FileUtil
     {
         /// <summary>
         /// 文字列一覧をファイルに書き込みます。
@@ -18,10 +18,14 @@ namespace Utility
         /// <param name="list">文字列一覧を設定します。</param>
         /// <param name="filePath">出力ファイルパスを設定します。</param>
         public static void FileWriteAllText(
-            [param: Required]List<string> list,
+            [param: Required]IReadOnlyCollection<string> list,
             string filePath
             )
         {
+            // nullチェック
+            if (list == null)
+                throw new ArgumentNullException("list");
+
             try
             {
                 // 文字列一覧をファイルに書き込みます。
@@ -42,7 +46,7 @@ namespace Utility
         /// </summary>
         /// <param name="filePath">ファイルパスを設定します。</param>
         /// <returns>文字列一覧を返します。</returns>
-        public static List<string> FileReadAllText(
+        public static IReadOnlyCollection<string> FileReadAllText(
             string filePath
             )
         {

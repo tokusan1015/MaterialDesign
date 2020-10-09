@@ -1,7 +1,10 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.Linq.Mapping;
 using System.Data.SQLite;
+using System.Globalization;
+using System.Reflection;
 
 namespace SQLiteAccessorBase
 {
@@ -35,6 +38,7 @@ namespace SQLiteAccessorBase
         /// コンストラクタ
         /// </summary>
         /// <param name="dataSource">データソースを設定します。</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public SQLiteDataTableAccessorBase(
             string dataSource = ""
             ) : base(dataSource: dataSource)
@@ -47,7 +51,7 @@ namespace SQLiteAccessorBase
         /// <summary>
         /// 破棄処理
         /// </summary>
-        /// <param name="disposing"></param>
+        /// <param name="disposing">disposeフラグ</param>
         protected override void Dispose(bool disposing)
         {
             // 破棄処理
@@ -91,7 +95,10 @@ namespace SQLiteAccessorBase
             // データテーブルを破棄します。
             this.Dispose_DataTable();
 
-            this.DataTable = new DataTable();
+            this.DataTable = new DataTable
+            {
+                Locale = CultureInfo.InvariantCulture
+            };
         }
 
         /// <summary>
@@ -99,12 +106,22 @@ namespace SQLiteAccessorBase
         /// データを取得するSQL文を設定してください。
         /// 尚、"{0}"は、テーブル名固定となります。
         /// </summary>
-        /// <param name="sqlString">データを取得するSQL文を設定します。</param>
+        /// <param name="tableClassType">テーブル構造定義クラスタイプを設定します。</param>
+        /// <param name="sqlText">データを取得するSQL文を設定します。</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:SQL クエリのセキュリティ脆弱性を確認")]
-        public void SetDataTable<TTable>(
-            string sqlString = @"SELECT * FROM {0};"
-            ) where TTable : class
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object)")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        public void SetDataTable(
+            [param: Required]MemberInfo tableClassType,
+            string sqlText = @"SELECT * FROM {0};"
+            )
         {
+            // nullチェック
+            if (tableClassType == null)
+                throw new ArgumentNullException("tableClassType");
+            if (sqlText == null)
+                throw new ArgumentNullException("sqlText");
+
             // データアダプタを開放します。
             this.Dispose_DataAdapter();
 
@@ -112,16 +129,19 @@ namespace SQLiteAccessorBase
             this.Dispose_DataTable();
 
             // テーブル名を取得します。
-            this.TableName = Utility.AttributeUtil
-                .GetClassAttribute<TableAttribute>(typeof(TTable)).Name;
+            this.TableName = Utility.AttributeTable
+                .GetTableName(tableClassType: tableClassType);
 
             // SQL文を生成します。
-            var sql = string.Format(sqlString, this.TableName);
+            var sql = string.Format(sqlText, this.TableName);
 
             try
             {
                 // データテーブルを生成します。
-                this.DataTable = new DataTable();
+                this.DataTable = new DataTable
+                {
+                    Locale = CultureInfo.InvariantCulture
+                };
 
                 // データアダプタを設定します。
                 this.DataAdapter =

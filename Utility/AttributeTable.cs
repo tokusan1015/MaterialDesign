@@ -4,59 +4,103 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.Linq.Mapping;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Utility
 {
     /// <summary>
+    /// 属性情報を表します。
+    /// </summary>
+    public class ColumnAttributeData
+    {
+        /// <summary>
+        /// プロパティ名
+        /// </summary>
+        public string PropertyName { get; private set; } = "";
+        /// <summary>
+        /// カラム属性情報
+        /// </summary>
+        public ColumnAttribute ColumnAttribute { get; private set; } = null;
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="propertyName">プロパティ名を設定します。</param>
+        /// <param name="columnAttribute">カラム属性情報を設定します。</param>
+        public ColumnAttributeData(
+            [param: Required]string propertyName,
+            ColumnAttribute columnAttribute
+            )
+        {
+            this.PropertyName = propertyName;
+            this.ColumnAttribute = columnAttribute;
+        }
+    }
+
+    /// <summary>
     /// テーブル属性用ユーティリティ
     /// </summary>
     [Utility.Developer(name: "tokusan1015")]
-    public class AttributeTable
+    public static class AttributeTable
     {
         #region Table
+
         /// <summary>
-        /// テーブル構造定義クラスのテーブル名を取得します。
+        /// TableAttributeからテーブル名を取得します。
         /// </summary>
-        /// <typeparam name="TTable">テーブル構造定義クラス</typeparam>
+        /// <param name="tableClassType">テーブル構造定義クラスタイプを設定します。</param>
         /// <returns>テーブル名を返します。</returns>
-        public static string GetTableAttributeName<TTable>(
-            ) where TTable : class
+        public static string GetTableName(
+            MemberInfo tableClassType
+            )
         {
-            // テーブル構造定義クラスのテーブル名を取得します。
-            return Utility.AttributeUtil
-                .GetClassAttribute<TableAttribute>(typeof(TTable)).Name;
+            // テーブル属性を取得します。
+            var tableAttribute = Utility.AttributeUtil
+                .GetClassAttribute(tableClassType, typeof(TableAttribute)) as TableAttribute;
+
+            // テーブル名を取得します。
+            return tableAttribute.Name;
         }
 
         /// <summary>
         /// テーブル構造定義クラスのプロパティ名に紐づけられたColumnAttributeを
-        /// ICollection(KeyValuePair(string, ColumnAttribute))形式で取得します。
+        /// ICollection(ColumnAttributeData)形式で取得します。
         /// KeyValuePair.Key   : プロパティ名
         /// KeyValuePair.Value : ColumnAttribute
         /// </summary>
-        /// <typeparam name="TTable">テーブル構造定義クラスを設定します。</typeparam>
-        /// <returns>ICollection(KeyValuePair(string, ColumnAttribute))形式で返します。</returns>
-        public static ICollection<KeyValuePair<string, ColumnAttribute>>
-            GetColumnAttributeList<TTable>(
-            ) where TTable : class
+        /// <param name="classType">テーブル構造定義クラスタイプを設定します。</param>
+        /// <param name="bindingAttr">BindingFlagsを設定します。</param>
+        /// <returns>ICollection(ColumnAttributeData)形式で返します。</returns>
+        public static ICollection<ColumnAttributeData>
+            GetColumnAttributeList(
+            [param: Required]Type classType,
+            BindingFlags bindingAttr
+            )
         {
-            var result = new List<KeyValuePair<string, ColumnAttribute>>();
+            var result = new List<ColumnAttributeData>();
 
             // テーブル構造定義クラスのプロパティ一覧を取得します。
-            var props = Utility.ObjectUtil.GetClassPropertys<TTable>();
+            var props = Utility.ObjectUtil
+                .GetClassPropertys(classType: classType, bindingAttr: bindingAttr);
 
             // 取得した全プロパティ名を処理します。
             foreach (var name in props)
             {
                 // プロパティ名に紐づけられたColumnAttributeを取得します。
-                var ca = Utility.AttributeUtil
-                    .GetPropertyAttribute<ColumnAttribute>(
-                    classType: typeof(TTable),
-                    propertyName: name.ToString()
-                    );
+                var ca = (ColumnAttribute)Utility.AttributeUtil
+                    .GetPropertyAttribute(
+                        attrType: typeof(ColumnAttribute),
+                        classType: classType,
+                        propertyName: name.ToString(),
+                        bindingAttr: bindingAttr
+                        );
                 if (ca != null)
                 {
-                    result.Add(new KeyValuePair<string, ColumnAttribute>(key: name, value: ca));
+                    result.Add(new ColumnAttributeData(
+                        propertyName: name,
+                        columnAttribute: ca
+                        ));
                 }
             }
 
@@ -66,16 +110,27 @@ namespace Utility
 
         /// <summary>
         /// テーブル構造定義クラスから情報(カラム名・値)一覧を取得します。
+        /// DataPlusを使用している場合です。
         /// </summary>
-        /// <typeparam name="TTable">テーブル構造定義クラスを設定します。</typeparam>
-        /// <param name="obj">テーブル構造定義クラスのインスタンスを設定します。</param>
+        /// <param name="TTable">テーブル構造定義クラスタイプを設定します。</param>
+        /// <param name="tableClassInstance">テーブル構造定義クラスのインスタンスを設定します。</param>
+        /// <param name="bindingAttr">BindingFlagsを設定します。</param>
         /// <returns>カラム情報一覧を返します。</returns>
-        public static Utility.ColumnParam GetColumnParam<TTable>(
-            [param: Required]object obj
-            ) where TTable : class
+        public static Utility.ColumnParam GetColumnParam(
+            [param: Required]Type classType,
+            [param: Required]object tableClassInstance,
+            BindingFlags bindingAttr
+            )
         {
+            // null チェック
+            if (classType == null)
+                throw new ArgumentNullException("classType");
+            if (tableClassInstance == null)
+                throw new ArgumentNullException("tableClassInstance");
+
             // テーブル構造定義クラスのColumnAttribute一覧を取得します。
-            var calist = Utility.AttributeTable.GetColumnAttributeList<TTable>();
+            var calist = Utility.AttributeTable
+                .GetColumnAttributeList(classType: classType, bindingAttr: bindingAttr);
 
             // ColumnParamを生成します。
             var cp = new Utility.ColumnParam();
@@ -84,21 +139,21 @@ namespace Utility
             foreach (var ca in calist)
             {
                 // カラム名を取得します。
-                var columnName = ca.Value.Name;
+                var columnName = ca.ColumnAttribute.Name;
 
                 // プロパティの値を取得します。
-                var value = typeof(TTable)
-                    .GetProperty(ca.Key)
-                    .GetValue(obj: obj, index: null);
+                var value = classType
+                    .GetProperty(ca.PropertyName, bindingAttr: bindingAttr)
+                    .GetValue(obj: tableClassInstance, index: null);
 
                 // ColumnParamにColumnInfoを追加します。
                 cp.Add(columnInfo: new Utility.ColumnInfo()
                 {
-                    PropertyName = ca.Key,
+                    PropertyName = ca.PropertyName,
                     ColumnName = columnName,
-                    DbType = ca.Value.DbType,
-                    IsPrimaryKey = ca.Value.IsPrimaryKey,
-                    CanBeNull = ca.Value.CanBeNull,
+                    Dbtype = ca.ColumnAttribute.DbType,
+                    IsPrimaryKey = ca.ColumnAttribute.IsPrimaryKey,
+                    CanBeNull = ca.ColumnAttribute.CanBeNull,
                     Value = value
                 });
             }
@@ -109,13 +164,17 @@ namespace Utility
         /// テーブル構造定義クラスから情報(カラム名)一覧を取得します。
         /// ColumnParamのvalueにはnullを設定します。
         /// </summary>
-        /// <typeparam name="TTable">テーブル構造定義クラスを設定します。</typeparam>
+        /// <param name="TTable">テーブル構造定義クラスタイプを設定します。</param>
         /// <returns>カラム情報一覧を返します。</returns>
-        public static Utility.ColumnParam GetColumnParam<TTable>(
-            ) where TTable : class
+        /// <param name="bindingAttr">BindingFlagsを設定します。</param>
+        public static Utility.ColumnParam GetColumnParam(
+            [param: Required]Type classType,
+            BindingFlags bindingAttr
+            )
         {
             // テーブル構造定義クラスのColumnAttribute一覧を取得します。
-            var calist = Utility.AttributeTable.GetColumnAttributeList<TTable>();
+            var calist = Utility.AttributeTable
+                .GetColumnAttributeList(classType: classType, bindingAttr: bindingAttr);
 
             // ColumnParamを生成します。
             var cp = new Utility.ColumnParam();
@@ -124,16 +183,16 @@ namespace Utility
             foreach (var ca in calist)
             {
                 // カラム名を取得します。
-                var columnName = ca.Value.Name;
+                var columnName = ca.ColumnAttribute.Name;
 
                 // ColumnParamにColumnInfoを追加します。
                 cp.Add(columnInfo: new Utility.ColumnInfo()
                 {
-                    PropertyName = ca.Key,
+                    PropertyName = ca.PropertyName,
                     ColumnName = columnName,
-                    DbType = ca.Value.DbType,
-                    IsPrimaryKey = ca.Value.IsPrimaryKey,
-                    CanBeNull = ca.Value.CanBeNull,
+                    Dbtype = ca.ColumnAttribute.DbType,
+                    IsPrimaryKey = ca.ColumnAttribute.IsPrimaryKey,
+                    CanBeNull = ca.ColumnAttribute.CanBeNull,
                     Value = null
                 });
             }
@@ -143,26 +202,36 @@ namespace Utility
         /// <summary>
         /// 対象クラスのプロパティにDataRowの値を設定します。
         /// </summary>
-        /// <typeparam name="TTable">テーブル構造定義クラスを設定します。</typeparam>
-        /// <param name="obj">対象のオブジェクトを設定します。</param>
+        /// <param name="classType">テーブル構造定義クラスタイプを設定します。</param>
+        /// <param name="tableClassInstance">対象のテーブルクラスインスタンスを設定します。</param>
         /// <param name="dataRow">対象に設定するDataRowを設定します。</param>
-        public static void SetValuesFromDataRow<TTable>(
-            [param: Required]object obj,
-            [param: Required]DataRow dataRow
-            ) where TTable : class
+        /// <param name="bindingAttr">BindingFlagsを設定します。</param>
+        public static void SetValuesFromDataRow(
+            [param: Required]Type classType,
+            [param: Required]object tableClassInstance,
+            [param: Required]DataRow dataRow,
+            BindingFlags bindingAttr
+            )
         {
+            // null チェック
+            if (tableClassInstance == null)
+                throw new ArgumentNullException("tableClassInstance");
+            if (dataRow == null)
+                throw new ArgumentNullException("dataRow");
+
             // カラム名一覧を取得します。
             var columnNames = Utility.AttributeTable
-                .GetColumnAttributeList<TTable>();
+                .GetColumnAttributeList(classType: classType, bindingAttr: bindingAttr);
 
             // 対象オブジェクトのプロパティに値を設定します。
             foreach (var n in columnNames)
             {
-                var value = dataRow[n.Value.Name];
+                var value = dataRow[n.ColumnAttribute.Name];
                 Utility.ObjectUtil.SetPropertyValue(
-                    obj: obj,
-                    name: n.Value.Name,
-                    value: value
+                    target: tableClassInstance,
+                    name: n.ColumnAttribute.Name,
+                    value: value,
+                    bindingAttr: bindingAttr
                     );
             }
         }

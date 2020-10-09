@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data.SQLite;
 
 namespace SQLiteAccessorBase
@@ -26,6 +27,7 @@ namespace SQLiteAccessorBase
         /// コンストラクタ
         /// </summary>
         /// <param name="DataSource">データソースを設定します。</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public SQLiteSqlAccessorBase(
             string dataSource = ""
             ) : base(dataSource: dataSource)
@@ -67,10 +69,14 @@ namespace SQLiteAccessorBase
         /// </summary>
         /// <param name="query">クエリデータリストを設定します。</param>
         /// <returns>処理件数を返します。</returns>
-        public int ExecuteNonQuery<TTable>(
-            ICollection<Utility.QueryData> queryDatas
-            ) where TTable : class 
+        public int ExecuteNonQuery(
+            [param: Required]ICollection<Utility.QueryData> queryDatas
+            ) 
         {
+            // nullチェック
+            if (queryDatas == null)
+                throw new ArgumentNullException("queryDatas");
+
             // 処理可能か調べます。
             this.CheckExecuteConnection();
 
@@ -122,7 +128,7 @@ namespace SQLiteAccessorBase
         /// </summary>
         /// <param name="queryData">クエリデータを設定します。</param>
         public void ExecuteQuery(
-            Utility.QueryData queryData
+            [param: Required]Utility.QueryData queryData
             )
         {
             // 処理可能か調べます。

@@ -7,7 +7,7 @@ namespace Utility
     /// カラーユーティリティ
     /// </summary>
     [Utility.Developer(name: "tokusan1015")]
-    public class ColorUtil
+    public static class ColorUtil
     {
         /// <summary>
         /// 指定した色の反転色を取得します。

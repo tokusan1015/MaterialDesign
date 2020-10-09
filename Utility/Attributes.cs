@@ -1,5 +1,6 @@
 ﻿using System;
 
+[assembly: CLSCompliant(true)]
 namespace Utility
 {
     #region DeveloperAttribute
@@ -11,7 +12,7 @@ namespace Utility
         AttributeTargets.Class,
         AllowMultiple = true,
         Inherited = false)]
-    public class DeveloperAttribute : Attribute
+    public sealed class DeveloperAttribute : Attribute
     {
         /// <summary>
         /// 開発者名
@@ -39,32 +40,32 @@ namespace Utility
         AttributeTargets.Property,
         AllowMultiple = false,
         Inherited = false)]
-    public class ButtonAttribute : Attribute
+    public sealed class ButtonAttribute : Attribute
     {
         /// <summary>
         /// タイトル
         /// </summary>
-        public string Title { get; set; } = "";
+        public string ButtonTitle { get; private set; } = "";
         /// <summary>
         /// コマンド
         /// </summary>
-        public string Command { get; set; } = "";
+        public string ButtonCommand { get; private set; } = "";
         /// <summary>
         /// コンストラクタ
         /// コマンド例
         /// 画面遷移  : "Move [遷移先]"
         /// アプリ終了: "Exit"
         /// </summary>
-        /// <param name="command">ボタンの動作を決めるコマンドを設定します。</param>
+        /// <param name="buttonCommand">ボタンの動作を決めるコマンドを設定します。</param>
         /// <param name="transitionName">遷移先Viewの名称を設定します。</param>
-        /// <param name="title">ボタンに表示するタイトルを設定します。</param>
+        /// <param name="buttonTitle">ボタンに表示するタイトルを設定します。</param>
         public ButtonAttribute(
-            string title,
-            string command
+            string buttonTitle,
+            string buttonCommand
             )
         {
-            this.Command = command;
-            this.Title = title;
+            this.ButtonCommand = buttonCommand;
+            this.ButtonTitle = buttonTitle;
         }
     }
     #endregion ButtonAttribute

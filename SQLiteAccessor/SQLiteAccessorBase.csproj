@@ -24,6 +24,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>7.3</LangVersion>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -57,15 +58,19 @@
     <Compile Include="SQLiteAccessorException.cs" />
     <Compile Include="SQLiteToLinqAccessorBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TableBase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{8392cfb6-c586-4a30-86f2-814beba8181f}</Project>
       <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RPUtility\RPUtility.csproj">
+      <Project>{37e259dc-8388-42d7-991a-cb249b899a76}</Project>
+      <Name>RPUtility</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utility\Utility.csproj">
       <Project>{90d87332-d8f9-4be7-9ca8-a5fd1510ffd5}</Project>

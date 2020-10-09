@@ -16,22 +16,16 @@
         /// コンストラクタ
         /// </summary>
         /// <param name="dataSource">データソース</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public SQLiteAccessor(
             string dataSource = ""
             ) : base(dataSource)
         {
+
         }
         #endregion コンストラクト
 
         #region レコードの検索
-        /// <summary>
-        /// レコード検索の例
-        /// </summary>
-        /// <returns>検索結果を返します。</returns>
-        public void Select_Example()
-        {
-
-        }
         #endregion レコードの検索
     }
 }

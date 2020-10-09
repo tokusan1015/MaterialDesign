@@ -20,7 +20,7 @@ namespace Utility
         /// </summary>
         public enum Mode
         {
-            UnKnown,    // 不明
+            Unknown,    // 不明
             Stoped,     // 停止中
             Playing,    // 再生中
         }
@@ -38,7 +38,7 @@ namespace Utility
         /// <summary>
         /// ステータス
         /// </summary>
-        public Mode Status { get; private set; } = SoundPlayerEx.Mode.UnKnown;
+        public Mode Status { get; private set; } = SoundPlayerEx.Mode.Unknown;
 
         /// <summary>
         /// コンストラクタ
@@ -165,7 +165,6 @@ namespace Utility
                 this.SoundPlayer.Dispose();
                 this.SoundPlayer = null;
             }
-            GC.SuppressFinalize(this);
         }
     }
 

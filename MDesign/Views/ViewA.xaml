@@ -4,10 +4,18 @@
              xmlns:local="clr-namespace:MaterialDesignViews.Views"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True" >
+    <!--Loadedイベントを発生します。-->
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <!--Loadedイベントを発生します。-->
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
@@ -31,6 +39,8 @@
                  VerticalAlignment="Center"
                  Margin="10,5,10,5"
                  Text="{Binding LastName.Data.Value, UpdateSourceTrigger=PropertyChanged}"
+                 Visibility="{Binding LastName.IsVisible.Value, Converter={StaticResource BoolToVisibility}}"
+                 IsEnabled="{Binding LastName.IsEnable.Value}"
                  />
         <TextBlock Grid.Row="1" Grid.Column="0" 
                    Style="{StaticResource MaterialDesignHeadline6TextBlock}"
@@ -41,6 +51,8 @@
         <TextBox Grid.Row="1" Grid.Column="1"
                  VerticalAlignment="Center"
                  Text="{Binding FirstName.Data.Value, UpdateSourceTrigger=PropertyChanged}"
+                 Visibility="{Binding FirstName.IsVisible.Value, Converter={StaticResource BoolToVisibility}}"
+                 IsEnabled="{Binding FirstName.IsEnable.Value}"
                  Margin="10,5,10,5"
                  />
         <TextBlock Grid.Row="2" Grid.Column="0" 
@@ -52,6 +64,8 @@
         <DatePicker Grid.Row="2" Grid.Column="1"                   
                     SelectedDateFormat="Long"
                     SelectedDate="{Binding Birthday.Data.Value, UpdateSourceTrigger=PropertyChanged}"
+                    Visibility="{Binding Birthday.IsVisible.Value, Converter={StaticResource BoolToVisibility}}"
+                    IsEnabled="{Binding Birthday.IsEnable.Value}"
                     Margin="10,5,10,5"
                     />
         <TextBlock Grid.Row="3" Grid.Column="0" 
@@ -64,9 +78,20 @@
                     Orientation="Horizontal" VerticalAlignment="Center"
                     Margin="10,5,10,5"
                     >
-            <RadioButton Content="男性 " IsChecked="{Binding Gender.Data.Value, Mode=TwoWay, Converter={StaticResource EnumBool}, ConverterParameter=男性, UpdateSourceTrigger=PropertyChanged}"/>
-            <RadioButton Content="女性 " IsChecked="{Binding Gender.Data.Value, Mode=TwoWay, Converter={StaticResource EnumBool}, ConverterParameter=女性, UpdateSourceTrigger=PropertyChanged}"/>
-            <RadioButton Content="不明 " IsChecked="{Binding Gender.Data.Value, Mode=TwoWay, Converter={StaticResource EnumBool}, ConverterParameter=不明, UpdateSourceTrigger=PropertyChanged}"/>
+            <RadioButton Content="男性 "
+                         IsChecked="{Binding Gender.Data.Value, Mode=TwoWay, Converter={StaticResource EnumBool}, ConverterParameter=男性, UpdateSourceTrigger=PropertyChanged}"
+                         Visibility="{Binding Gender.IsVisible.Value, Converter={StaticResource BoolToVisibility}}"
+                         IsEnabled="{Binding Gender.IsEnable.Value}"
+                         />
+            <RadioButton Content="女性 " 
+                         IsChecked="{Binding Gender.Data.Value, Mode=TwoWay, Converter={StaticResource EnumBool}, ConverterParameter=女性, UpdateSourceTrigger=PropertyChanged}"
+                         Visibility="{Binding Gender.IsVisible.Value, Converter={StaticResource BoolToVisibility}}"
+                         IsEnabled="{Binding Gender.IsEnable.Value}"
+                         />
+            <RadioButton Content="不明 " IsChecked="{Binding Gender.Data.Value, Mode=TwoWay, Converter={StaticResource EnumBool}, ConverterParameter=不明, UpdateSourceTrigger=PropertyChanged}"
+                         Visibility="{Binding Gender.IsVisible.Value, Converter={StaticResource BoolToVisibility}}"
+                         IsEnabled="{Binding Gender.IsEnable.Value}"
+                         />
         </StackPanel>
         <TextBlock Grid.Row="4" Grid.Column="0" 
                    Style="{StaticResource MaterialDesignHeadline6TextBlock}"
@@ -81,6 +106,8 @@
                   SelectedValuePath="Key"
                   DisplayMemberPath="Value"
                   SelectedValue="{Binding Country.Data.Value}"
+                  Visibility="{Binding Country.IsVisible.Value, Converter={StaticResource BoolToVisibility}}"
+                  IsEnabled="{Binding Country.IsEnable.Value}"
                   />
     </Grid>
 </UserControl>

@@ -8,7 +8,7 @@ namespace Utility
     /// 数学ユーティリティ
     /// </summary>
     [Utility.Developer(name: "tokusan1015")]
-    public class MathUtil
+    public static class MathUtil
     {
         /// <summary>
         /// 数値型の配列から最小値と最大値を取得する

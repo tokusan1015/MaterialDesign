@@ -81,6 +81,7 @@ namespace MaterialDesign
         /// </summary>
         /// <param name="sender">送信元</param>
         /// <param name="e">送信パラメータ</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:ローカライズされるパラメーターとしてリテラルを渡さない", MessageId = "System.Windows.MessageBox.Show(System.String,System.String,System.Windows.MessageBoxButton,System.Windows.MessageBoxImage)")]
         private void App_FirstChanceException(
             object sender, 
             FirstChanceExceptionEventArgs e
@@ -112,6 +113,7 @@ namespace MaterialDesign
         /// </summary>
         /// <param name="sender">送信元</param>
         /// <param name="e">送信パラメータ</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:ローカライズされるパラメーターとしてリテラルを渡さない", MessageId = "System.Windows.MessageBox.Show(System.String,System.String,System.Windows.MessageBoxButton,System.Windows.MessageBoxImage)")]
         private void App_DispatcherUnhandledException(
             object sender, 
             DispatcherUnhandledExceptionEventArgs e
@@ -138,6 +140,7 @@ namespace MaterialDesign
         /// </summary>
         /// <param name="sender">送信元</param>
         /// <param name="e">送信パラメータ</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:ローカライズされるパラメーターとしてリテラルを渡さない", MessageId = "System.Windows.MessageBox.Show(System.String,System.String,System.Windows.MessageBoxButton,System.Windows.MessageBoxImage)")]
         private void App_UnobservedTaskException(
             object sender,
             UnobservedTaskExceptionEventArgs e
@@ -165,6 +168,7 @@ namespace MaterialDesign
         /// </summary>
         /// <param name="sender">送信元</param>
         /// <param name="e">送信パラメータ</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:ローカライズされるパラメーターとしてリテラルを渡さない", MessageId = "System.Windows.MessageBox.Show(System.String,System.String,System.Windows.MessageBoxButton,System.Windows.MessageBoxImage)")]
         private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             // ExceptionObjectを取得します。

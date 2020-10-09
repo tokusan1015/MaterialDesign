@@ -1,8 +1,15 @@
-﻿using Prism.Mvvm;
+﻿using System;
+using Prism.Mvvm;
 using Prism.Regions;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Collections.ObjectModel;
+using Common;
+using Prism.Ioc;
+using System.Windows.Controls;  // assembly:PresentationCore, PresentationFramework
+using Prism.Commands;
+using Prism.Events;
 
 namespace RPUtility
 {
@@ -14,29 +21,102 @@ namespace RPUtility
     /// </summary>
     [Utility.Developer(name: "tokusan1015")]
     public abstract class BindableBasePlus
-        : BindableBase, IBindableBasePlus, INavigationAware
-        //, INotifyDataErrorInfo
+        : BindableBase, INavigationAware, IRegionMemberLifetime    //, INotifyDataErrorInfo
     {
-        #region protectedプロパティ
+        #region DelegateCommand
         /// <summary>
-        /// ViewName
+        /// ロード完了イベント(LoadedCommand)
         /// </summary>
-        public string ViewName { get; protected set; }
+        private DelegateCommand _LoadedCommand;
+        public DelegateCommand LoadedCommand =>
+            _LoadedCommand = _LoadedCommand ?? new DelegateCommand(Loaded);
+        protected abstract void Loaded();
+        #endregion DelegateCommand
+
+        #region プロパティ
+        /// <summary>
+        /// 初期化終了フラグ
+        /// </summary>
+        public bool InitiazaizuEnd { get; set; } = false;
+
+        #region Prism
+        /// <summary>
+        /// 画面をキャッシュに保持・破棄フラグを表します。
+        /// trueにするとキャッシュに保持されます。
+        /// </summary>
+        public bool KeepAlive => true;
+        /// <summary>
+        /// 拡張コンテナを表します。
+        /// コンストラクタで取得設定してください。
+        /// </summary>
+        protected IContainerExtension Container { get; } = null;
         /// <summary>
         /// リージョンマネージャを表します。
         /// コンストラクタで取得して設定してください。
         /// </summary>
-        protected IRegionManager RegionManager { get; private set; }
+        protected IRegionManager RegionManager { get; } = null;
+        /// <summary>
+        /// イベントアグリゲータを表します。
+        /// </summary>
+        protected IEventAggregator EventAggregator { get; } = null;
+        /// <summary>
+        /// リージョンを表します。
+        /// </summary>
+        protected IRegion Region { get; private set; } = null;
+        /// <summary>
+        /// エラー情報を表します。
+        /// </summary>
+        protected ViewErrInfo ViewErrInfo { get; } = new ViewErrInfo();
+        #endregion Prism
+
+        #region メッセージ
+        /// <summary>
+        /// メッセージマネージャを表します。
+        /// </summary>
+        public MessageManager MessageManager { get; } = null;
+        #endregion メッセージ
+
+        #region MainView/View共通
+        /// <summary>
+        /// MainView用ActiveViewName
+        /// </summary>
+        public string ActiveViewName { get; protected set; } = "";
+        /// <summary>
+        /// ViewId
+        /// 識別用Id
+        /// </summary>
+        public int ViewId { get; set; } = -1;
+        /// <summary>
+        /// 識別用MainViewName
+        /// </summary>
+        public string MainViewName { get; } = "";
+        /// <summary>
+        /// 識別用ViewName
+        /// </summary>
+        public string ViewName { get; } = "";
+        /// <summary>
+        /// View一覧
+        /// </summary>
+        protected Dictionary<string, ViewInfo> Views { get; } =
+            new Dictionary<string, ViewInfo>();
+        #endregion MainView/View共通
+
+        #region 共通データ
         /// <summary>
         /// 共通データオブジェクトを表します。
         /// MainWindowViewModelでインスタンスを生成する必要があります。
         /// </summary>
-        protected object CommonDatas { get; private set; }
+        protected Common.CommonDatas CommonDatas { get; private set; } = null;
+        #endregion 共通データ
+
+        #region ControlInfo
         /// <summary>
         /// ControlInfoBaseリスト
         /// </summary>
-        protected List<RPUtility.ControlInfoBase> CIBList { get; } = new List<RPUtility.ControlInfoBase>();
-        #endregion protectedプロパティ
+        protected List<RPUtility.ControlInfoBase> CibList { get; } = new List<RPUtility.ControlInfoBase>();
+        #endregion　ControlInfo
+
+        #endregion プロパティ
 
         #region コンストラクタ
         /// <summary>
@@ -44,20 +124,127 @@ namespace RPUtility
         /// 引数を追加することによりPrismに対して各インスタンスを要求しています。
         /// CommonDatasは、App.xaml.csのRegisterTypesにて登録されます。
         /// </summary>
+        /// <param name="container">拡張コンテナを設定します。</param>
         /// <param name="regionManager">リージョンマネージャを設定します。</param>
+        /// <param name="eventAggregator">イベントアグリゲータを設定します。</param>
         /// <param name="commonDatas">共通データを設定します。</param>
+        /// <param name="mainViewName">MainViewNameを設定します。</param>
+        /// <param name="viewName">ViewNameを設定します。</param>
         protected BindableBasePlus(
+            [param: Required]IContainerExtension container,
             [param: Required]IRegionManager regionManager,
-            [param: Required]object commonDatas
+            [param: Required]IEventAggregator eventAggregator,
+            [param: Required]object commonDatas,
+            [param: Required]string mainViewName,
+            [param: Required]string viewName
             )
         {
-            // リージョンマネージャ、共通データを取得および設定します。
-            this.RegionManager = regionManager;
-            this.CommonDatas = commonDatas;
+            // 拡張コンテナ、リージョンマネージャ、共通データの取得および設定をします。
+            this.Container = container ?? throw new ArgumentNullException("container");
+            this.RegionManager = regionManager ?? throw new ArgumentNullException("regionManager");
+            this.EventAggregator = eventAggregator ?? throw new ArgumentNullException("eventAggregator");
+            this.MainViewName = mainViewName ?? throw new ArgumentNullException("mainViewName");
+            this.ViewName = viewName ?? throw new ArgumentNullException("viewName");
+            // objectからCommonDatasにキャストして設定します。
+            var cd = commonDatas ?? throw new ArgumentNullException("commonDatas");
+            this.CommonDatas = cd as Common.CommonDatas;
+
+            // メッセージマネージャを設定します。
+            this.MessageManager = new MessageManager(
+                eventAggregator: eventAggregator,
+                receivedMessage: this.ReceivedMessage,
+                mainViewName: this.MainViewName,
+                viewName: this.ViewName
+                );
         }
         #endregion コンストラクタ
 
+        #region リージョン
+        /// <summary>
+        /// リージョンを設定します。
+        /// Loadedイベントで設定してください。
+        /// </summary>
+        /// <param name="region">リージョンを設定します。</param>
+        protected void SetRegion(
+            [param: Required]IRegion region
+            )
+        {
+            this.Region = region ?? throw new ArgumentNullException("region");
+        }
+        /// <summary>
+        /// リージョンおよびViewsにViewを登録します。
+        /// </summary>
+        /// <typeparam name="TView">登録するViewの型を設定します。</typeparam>
+        /// <param name="viewName">呼び出し名称を設定します。</param>
+        protected void AddRegionAndViews<TView>(
+            [param: Required]string viewName
+            ) where TView : UserControl
+        {
+            // nullチェック
+            if (viewName == null) throw new ArgumentNullException("viewName");
+
+            // Viewを取得・登録します。
+            var view = this.Container.Resolve<TView>();
+            this.Region.Add(view);
+
+            // Viewsに登録します。
+            this.Views.Add(
+                key: viewName,
+                value: new RPUtility.ViewInfo()
+                {
+                    Value = view
+                });
+        }
+        #endregion リージョン
+
+        #region CommonDatas
+        /// <summary>
+        /// CommonDatasへデータを保存します。
+        /// 保存指示はメッセージにて配信されます。
+        /// </summary>
+        protected abstract void SaveCommonDatas();
+        #endregion CommonDatas
+
+        #region メッセージ
+        /// <summary>
+        /// メッセージを受信します。
+        /// 自分宛のメッセージのみ受信します。
+        /// </summary>
+        /// <param name="message">受信メッセージ</param>
+        protected abstract void ReceivedMessage(string message);
+        #endregion メッセージ
+
+        #region View Activation, Deactivation
+        /// <summary>
+        /// 対象のViewを表示します。
+        /// 表示中のViewを非表示にします。
+        /// </summary>
+        /// <param name="viewName">ViewNameを設定します。</param>
+        public void ChangeShowView(string viewName)
+        {
+            // 初期値の場合は
+            if (this.ActiveViewName.Length <= 0)
+            {
+                // 現在のViewを非表示にします。
+                if (this.Views.ContainsKey(this.ActiveViewName))
+                {
+                    var uc = this.Views[this.ActiveViewName];
+                    this.Region.Deactivate(uc.Value);
+                }
+            }
+
+            // viewを表示にします。
+            if (this.Views.ContainsKey(viewName))
+            {
+                var uc = this.Views[viewName];
+                this.Region.Activate(uc.Value);
+                this.ActiveViewName = viewName;
+            }
+        }
+        #endregion View Activation, Deactivation
+
         #region INavigationAware
+        #region OnNavigatedTo
         /// <summary>
         /// パラメータ(ParamDatas)を受け取ります。
         /// 画面遷移後に呼び出されます。
@@ -82,11 +269,15 @@ namespace RPUtility
         /// 画面遷移後に呼び出されます。
         /// </summary>
         /// <param name="parameters">パラメータを表します。</param>
-        protected abstract void GetNavigateParameters(
+        public abstract void GetNavigateParameters(
             [param: Required] object parameters
             );
+        #endregion OnNavigatedTo
+
+        #region IsNavigationTarget
         /// <summary>
-        /// パラメータが存在するか確認します。
+        /// 移動可能であるかを確認します。
+        /// パラメータが存在するかを確認します。
         /// パラメータキーは、引き渡し側と受け取り側で合わせる必要があります。
         /// Key: PARAM_KEY_ALL
         /// </summary>
@@ -95,12 +286,33 @@ namespace RPUtility
         /// <returns>存在する場合trueを返します。</returns>
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
+            // 遷移可能フラグ
+            var result = false;
+
+            // 画面遷移の実行許可確認を行います。
+            var isNavigate = IsNavigate();
+
             // ナビゲーションコンテキストからパラメータを受け取ります。
             var param = this.GetNavigateParam(
                 navigationContext: navigationContext
                 );
-            return param != null;
+
+            // 遷移可能フラグ(必要な場合は、'&&'で連結してください。)
+            result = isNavigate && param != null
+                // ここに '&& xxxx'で連結します。
+                ;
+
+            return result;
         }
+        /// <summary>
+        /// 画面遷移前に呼び出されます。
+        /// 遷移の実行許可確認を行います。
+        /// </summary>
+        /// <returns>画面遷移可能な場合trueを返します。</returns>
+        public abstract bool IsNavigate();
+        #endregion IsNavigationTarget
+
+        #region OnNavigatedFrom
         /// <summary>
         /// パラメタを引き渡します。
         /// 画面遷移前に呼び出されます。
@@ -127,15 +339,18 @@ namespace RPUtility
         /// パラメータの設定を行います。
         /// 画面が遷移前に呼び出されます。
         /// </summary>
-        protected abstract object SetNavigateParameters();
+        /// <returns>パラメータを設定します。</returns>
+        public abstract object SetNavigateParameters();
+        #endregion OnNavigatedFrom
         #endregion INavigationAware
 
-        #region Navigate
+        #region Navigation
         /// <summary>
         /// パラメータキー
         /// </summary>
-        public readonly string PARAM_KEY_ALL = "PARAM_KEY_ALL";
+        private readonly string PARAM_KEY_ALL = "PARAM_KEY_ALL";
 
+        #region Navigate
         /// <summary>
         /// Prismで画面遷移を行います。
         /// リージョン名、遷移先名の存在チェックはしていません。
@@ -153,7 +368,6 @@ namespace RPUtility
                 source: target
                 );
         }
-
         /// <summary>
         /// Prismでパラメタ付きで画面遷移を行います。
         /// リージョン名、遷移先名の存在チェックはしていません。
@@ -173,11 +387,19 @@ namespace RPUtility
                 this.RegionManager.RequestNavigate(
                     regionName: regionName,
                     target: target,
+                    navigationCallback: this.NavigationComplete,
                     navigationParameters: parameters
                     );
             }
         }
+        /// <summary>
+        /// ナビゲーションが完了したことを知らせます。
+        /// </summary>
+        /// <param name="result">ナビゲーション結果が返ります。</param>
+        public abstract void NavigationComplete(NavigationResult result);
+        #endregion Navigate
 
+        #region NavigateParam
         /// <summary>
         /// Prismナビゲーション用の引き渡しパラメタを設定します。
         /// OnNavigatedFromで使用します。
@@ -187,9 +409,13 @@ namespace RPUtility
         /// <param name="value">パラメータ値を設定します。</param>
         public void SetNavigateParam(
             [param: Required]NavigationContext navigationContext,
-            object value
+            [param: Required]object value
             )
         {
+            // nullチェック
+            if (navigationContext == null)
+                throw new ArgumentNullException("navigationContext");
+
             // nullチェック
             if (value != null)
             {
@@ -200,7 +426,6 @@ namespace RPUtility
                     );
             }
         }
-
         /// <summary>
         /// Prismナビゲーションコンテキストからパラメタを受け取ります。
         /// OnNavigatedToで使用します。
@@ -213,58 +438,50 @@ namespace RPUtility
             [param: Required]NavigationContext navigationContext
             )
         {
+            // nullチェック
+            if (navigationContext == null)
+                throw new ArgumentNullException("navigationContext");
+
             return navigationContext.Parameters[PARAM_KEY_ALL];
         }
-        #endregion Navigate
+        #endregion NavigateParam
+        #endregion Navigation
 
         #region ControlInfo
         /// <summary>
         /// 対象外以外のボタンのEnableを設定します。
         /// ci が null の場合は全て設定します。
         /// </summary>
-        /// <param name="flag">フラグを設定します。</param>
+        /// <param name="enable">フラグを設定します。</param>
         /// <param name="ci">対象外ControlInfoBaseを設定します。</param>
         public void SetEnables(
-            bool flag,
+            bool enable,
             [param: Required]RPUtility.ControlInfoBase ci
             )
         {
-            this.CIBList.ForEach(c =>
+            this.CibList.ForEach(c =>
             {
                 if (!c.Equals(ci))
-                    c.IsEnable.Value = flag;
+                    c.IsEnable.Value = enable;
             });
-            /*
-            foreach (var c in this.CIBList)
-            {
-                if (!c.Equals(ci))
-                    c.IsEnable.Value = flag;
-            }
-            */
         }
         /// <summary>
         /// 全ControlInfoのIsEnableを設定します。
         /// groupNo が負の場合は全て設定します。
         /// </summary>
-        /// <param name="flag">フラグを設定します。</param>
+        /// <param name="enable">フラグを設定します。</param>
         /// <param name="groupNo">グループNoを設定します。</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public void SetEnables(
-            bool flag,
+            bool enable,
             int groupNo = -1
             )
         {
-            this.CIBList.ForEach(c =>
+            this.CibList.ForEach(c =>
             {
                 if (groupNo < 0 || c.GroupNo == groupNo)
-                    c.IsEnable.Value = flag;
+                    c.IsEnable.Value = enable;
             });
-            /*
-            foreach (var c in this.CIBList)
-            {
-                if (groupNo < 0 || c.GroupNo == groupNo)
-                    c.IsEnable.Value = flag;
-            }
-            */
         }
         /// <summary>
         /// 対象外以外のボタンのEnableを反転します。
@@ -282,18 +499,11 @@ namespace RPUtility
                 .Select(c => { c.InverseEnable(); return c; })
                 .ToArray();
             */
-            this.CIBList.ForEach(c =>
+            this.CibList.ForEach(c =>
             {
                 if (!c.Equals(ci))
                     c.InverseEnable();
             });
-            /*
-            foreach (var c in this.CIBList)
-            {
-                if (!c.Equals(ci))
-                    c.InverseEnable();
-            }
-            */
         }
         /// <summary>
         /// 対象groupNoのボタンのEnableを反転します。
@@ -304,66 +514,46 @@ namespace RPUtility
             int groupNo
             )
         {
-            this.CIBList.ForEach(c =>
+            this.CibList.ForEach(c =>
             {
                 if (groupNo < 0 || c.GroupNo == groupNo)
                     c.InverseEnable();
             });
-            /*
-            foreach (var c in this.CIBList)
-            {
-                if (groupNo < 0 || c.GroupNo == groupNo)
-                    c.InverseEnable();
-            }
-            */
         }
         /// <summary>
         /// 対象外以外のボタンのIsVisibleを設定します。
         /// ci が null の場合は全て設定します。
         /// </summary>
-        /// <param name="flag">フラグを設定します。</param>
+        /// <param name="visible">フラグを設定します。</param>
         /// <param name="ci">対象外ControlInfoBaseを設定します。</param>
         public void SetVisibles(
-            bool flag,
+            bool visible,
             [param: Required]RPUtility.ControlInfoBase ci
             )
         {
-            this.CIBList.ForEach(c =>
+            this.CibList.ForEach(c =>
             {
                 if (!c.Equals(ci))
-                    c.IsVisible.Value = flag;
+                    c.IsVisible.Value = visible;
             });
-            /*
-            foreach (var c in this.CIBList)
-            {
-                if (!c.Equals(ci))
-                    c.IsVisible.Value = flag;
-            }
-            */
         }
         /// <summary>
         /// 全ControlInfoのIsVisibleを設定します。
         /// groupNo が負の場合は全て設定します。
         /// </summary>
-        /// <param name="flag">フラグを設定します。</param>
+        /// <param name="visible">フラグを設定します。</param>
         /// <param name="groupNo">グループNoを設定します。</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public void SetVisibles(
-            bool flag,
+            bool visible,
             int groupNo = -1
             )
         {
-            this.CIBList.ForEach(c =>
+            this.CibList.ForEach(c =>
             {
                 if (groupNo < 0 || c.GroupNo == groupNo)
-                    c.IsVisible.Value = flag;
+                    c.IsVisible.Value = visible;
             });
-            /*
-            foreach (var c in this.CIBList)
-            {
-                if (groupNo < 0 || c.GroupNo == groupNo)
-                    c.IsVisible.Value = flag;
-            }
-            */
         }
         /// <summary>
         /// 対象外以外のボタンのVisibleを反転します。
@@ -374,18 +564,11 @@ namespace RPUtility
             [param: Required]RPUtility.ControlInfoBase ci
             )
         {
-            this.CIBList.ForEach(c =>
+            this.CibList.ForEach(c =>
             {
                 if (!c.Equals(ci))
                     c.InverseVisible();
             });
-            /*
-            foreach (var c in this.CIBList)
-            {
-                if (!c.Equals(ci))
-                    c.InverseVisible();
-            }
-            */
         }
         /// <summary>
         /// 対象groupNoのボタンのVisibleを反転します。
@@ -396,33 +579,69 @@ namespace RPUtility
             int groupNo
             )
         {
-            this.CIBList.ForEach(c =>
+            this.CibList.ForEach(c =>
             {
                 if (groupNo < 0 || c.GroupNo == groupNo)
                     c.InverseVisible();
             });
-            /*
-            foreach (var c in this.CIBList)
-            {
-                if (groupNo < 0 || c.GroupNo == groupNo)
-                    c.InverseVisible();
-            }
-            */
         }
         #endregion ControlInfo
 
         #region Validate
         /// <summary>
+        /// 入力項目の検証を行います。
+        /// エラーが存在する場合trueを返します。
+        /// </summary>
+        /// <param name="save">trueの場合エラーが無い場合に保存します。</param>
+        /// <returns>エラーが存在する場合trueを返します。</returns>
+        public bool CheckValidation(
+            bool save
+            )
+        {
+            // 初期化完了チェック
+            if (!this.InitiazaizuEnd) return false;
+            if (!this.MessageManager.Start) return false;
+
+            // エラーチェック
+            var result = this.HasErrors();
+
+            // エラーが無ければ
+            if (!result && save)
+            {
+                // データ保存
+                this.SaveCommonDatas();
+            }
+
+            // メッセージ送信
+            this.MessageManager.Message = result ?
+                EnumDatas.MessageCommand.InputError.ToString()
+                : EnumDatas.MessageCommand.NoInputError.ToString();
+            this.MessageManager.SendMessage();
+
+            return result;
+        }
+
+        /// <summary>
         /// CIBListに入力エラーが存在する場合trueを返します。
         /// </summary>
         /// <returns>CIBListに入力エラーが存在する場合trueを返します。</returns>
-        public bool HasErrors()
+        private bool HasErrors()
         {
             bool result = false;
 
-            foreach (var cib in this.CIBList)
+            this.ViewErrInfo.ErrorItem.Clear();
+
+            foreach (var cib in this.CibList)
             {
-                result |= cib.HasError();
+                var err = cib.HasError();
+#if DEBUG
+                if (err)
+                {
+                    // エラー有り
+                    Console.WriteLine($"Input Error {cib.PropertyName}");
+                }
+#endif
+                result |= err;
             }
 
             return result;
@@ -445,4 +664,31 @@ namespace RPUtility
         */
         #endregion INotifyDataErrorInfo
     }
+
+    /// <summary>
+    /// View情報クラス
+    /// </summary>
+    public class ViewInfo
+    {
+        /// <summary>
+        /// Viewを表します。
+        /// </summary>
+        public UserControl Value { get; set; } = null;
+        /// <summary>
+        /// 入力エラーを表します。
+        /// </summary>
+        public bool InputError { get; set; } = true;
+    }
+
+    /// <summary>
+    /// Viewエラー情報クラス
+    /// </summary>
+    public class ViewErrInfo
+    {
+        /// <summary>
+        /// エラーのあったプロパティ名を保存します。
+        /// </summary>
+        public List<string> ErrorItem { get; } = new List<string>();
+    }
+
 }

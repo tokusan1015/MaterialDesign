@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SQLiteAccessorBase
+namespace Common
 {
     /// <summary>
     /// テーブル基本クラス
     /// </summary>
-    /// <typeparam name="TTable"></typeparam>
-    public class TableBase<TTable> where TTable : class
+    public class TableBase
     {
         #region プロパティ(DB)
         /// <summary>
@@ -23,9 +24,15 @@ namespace SQLiteAccessorBase
         /// <summary>
         /// QueryParamのParamをUpdateします。
         /// </summary>
-        public void UpdateQueryDataValue()
+        /// <param name="bindingAttr">BindingFlagsを設定します。</param>
+        public void UpdateQueryDataValue(
+            BindingFlags bindingAttr
+            )
         {
-            this.QueryData.UpdateQueryDataValue<TTable>(obj: this);
+            this.QueryData.UpdateQueryDataValue(
+                tableClassInstance: this,
+                bindingAttr: bindingAttr
+                );
         }
         /// <summary>
         /// テーブル生成用SQL文を生成します。
@@ -33,16 +40,16 @@ namespace SQLiteAccessorBase
         /// <returns>テーブル生成用SQL文を返します。</returns>
         public string MakeCreateTableString()
         {
-            return this.QueryData.MakeSQLiteCreateTableSQL();
+            return this.QueryData.MakeSqliteCreateTableSql();
         }
         /// <summary>
         /// Insert用のSQL文を生成します。
         /// PrimaryKeyはAUTOINCREMENTである必要があります。
         /// </summary>
         /// <returns>Insert用のSQL文を返します。</returns>
-        public string MakeInsertSQL()
+        public string MakeInsertSql()
         {
-            return this.QueryData.MakeInsertSQL();
+            return this.QueryData.MakeInsertSql();
         }
 
         /// Update用のSQL文を生成します。
@@ -50,9 +57,16 @@ namespace SQLiteAccessorBase
         /// </summary>
         /// <param name="where">WHERE句を設定します。</param>
         /// <returns>Update用のSQL文を返します。</returns>
-        public string MakeUpdateSQL(string where = "")
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        public string MakeUpdateSql(
+            [param: Required]string where = ""
+            )
         {
-            return this.QueryData.MakeUpdateSQL(where: where);
+            // nullチェック
+            if (where == null)
+                throw new ArgumentNullException("where");
+
+            return this.QueryData.MakeUpdateSql(where: where);
         }
         /// <summary>
         /// Select用のSQL文を生成します。
@@ -66,14 +80,15 @@ namespace SQLiteAccessorBase
         /// <param name="limit">LIMITの設定を行います。負数は省略されます。</param>
         /// <param name="offset">OFFSETの設定を行います。負数は省略されます。</param>
         /// <returns>Select用のSQL文を返します。</returns>
-        public string MakeSelectSQL(
-            string where = "",
-            string orderby = "",
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        public string MakeSelectSql(
+            [param: Required]string where = "",
+            [param: Required]string orderby = "",
             int limit = -1,
             int offset = -1
             )
         {
-            return this.QueryData.MakeSelectSQL(
+            return this.QueryData.MakeSelectSql(
                 where: where,
                 orderby: orderby,
                 limit: limit,
@@ -84,11 +99,18 @@ namespace SQLiteAccessorBase
         /// <summary>
         /// Delete用のSQL文を生成します。
         /// </summary>
-        /// <param name="where"></param>
-        /// <returns></returns>
-        public string MakeDeleteSQL(string where = "")
+        /// <param name="where">ＷHERE句を設定します。WHERE文字を入れないで下さい。</param>
+        /// <returns>生成したSQL文を返します。</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        public string MakeDeleteSql(
+            [param: Required]string where = ""
+            )
         {
-            return this.QueryData.MakeDeleteSQL(where: where);
+            // nullチェック
+            if (where == null)
+                throw new ArgumentNullException("where");
+
+            return this.QueryData.MakeDeleteSql(where: where);
         }
 
         /// <summary>

@@ -35,12 +35,10 @@ namespace Utility
             DatePickerDateValidationErrorEventArgs e
             )
         {
-            if (sender is DatePicker)
+            if (sender is DatePicker dp)
             {
-                var dp = sender as DatePicker;
-
                 // 標準設定日時
-                DateTime dt = DefalutDateTime;
+                var dt = DefalutDateTime;
 
                 try
                 {

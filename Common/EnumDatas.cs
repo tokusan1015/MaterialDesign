@@ -6,6 +6,18 @@
     [Utility.Developer(name: "tokusan1015")]
     public static class EnumDatas
     {
+        public enum MessageCommand
+        {
+            /// <summary>
+            /// 入力エラー有り
+            /// </summary>
+            InputError,
+            /// <summary>
+            /// 入力エラー無し
+            /// </summary>
+            NoInputError,
+        }
+
         /// <summary>
         /// View名
         /// </summary>

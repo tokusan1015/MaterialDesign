@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -29,13 +30,30 @@ namespace MaterialDesign.Converter
         /// <summary>
         /// EnumからBooleanへの変換を行います。
         /// </summary>
-        /// <param name="value">Enum値</param>
-        /// <param name="targetType"></param>
-        /// <param name="parameter"></param>
-        /// <param name="culture"></param>
-        /// <returns></returns>
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        /// <param name="value">Enum値を設定します。</param>
+        /// <param name="targetType">ターゲットのタイプを設定します。</param>
+        /// <param name="parameter">パラメータを設定します。</param>
+        /// <param name="culture">カルチャー情報を設定します。</param>
+        /// <returns>変換結果を返します。</returns>
+        public object Convert(
+            [param: Required]object value,
+            Type targetType,
+            object parameter,
+            CultureInfo culture
+            )
         {
+            // nullチェック
+            if (value == null)
+                throw new ArgumentNullException("value");
+            /*
+            if (targetType == null)
+                throw new ArgumentNullException("targetType");
+            if (parameter == null)
+                throw new ArgumentNullException("parameter");
+            if (culture == null)
+                throw new ArgumentNullException("culture");
+            */
+
             if (!(parameter is string parameterString))
                 return DependencyProperty.UnsetValue;
 

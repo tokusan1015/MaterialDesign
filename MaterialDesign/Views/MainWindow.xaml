@@ -1,14 +1,24 @@
 ﻿<Window x:Class="MaterialDesign.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:prism="http://prismlibrary.com/"        
         prism:ViewModelLocator.AutoWireViewModel="True"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="{Binding WindowTitle.Value, Mode=OneWay}" Height="350" Width="525">
+    
+    <!--Loadedイベントを発生します。-->
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <!--Loadedイベントを発生します。-->
+    <!--VisibilityをBoolに相互変換します。-->
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
     </Window.Resources>
-    
+    <!--VisibilityをBoolに相互変換します。-->
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -52,37 +62,37 @@
                 <Button Grid.Row="0" Content="{Binding BtnInfo1.Title.Value}" 
                         Visibility="{Binding BtnInfo1.IsVisible.Value, Converter={StaticResource BoolToVisibility}}"
                         IsEnabled="{Binding BtnInfo1.IsEnable.Value}"
-                        Command="{Binding BtnInfo1.Clicked}"
+                        Command="{Binding BtnInfo1.Dcommand}"
                         Margin="5,5,5,5"
                         />
                 <Button Grid.Row="1" Content="{Binding BtnInfo2.Title.Value}"
                         Visibility="{Binding BtnInfo2.IsVisible.Value, Converter={StaticResource BoolToVisibility}}"
                         IsEnabled="{Binding BtnInfo2.IsEnable.Value}"
-                        Command="{Binding BtnInfo2.Clicked}"
+                        Command="{Binding BtnInfo2.Dcommand}"
                         Margin="5,5,5,5"
                         />
                 <Button Grid.Row="2" Content="{Binding BtnInfo3.Title.Value}"
                         Visibility="{Binding BtnInfo3.IsVisible.Value, Converter={StaticResource BoolToVisibility}}"
                         IsEnabled="{Binding BtnInfo3.IsEnable.Value}"
-                        Command="{Binding BtnInfo3.Clicked}"
+                        Command="{Binding BtnInfo3.Dcommand}"
                         Margin="5,5,5,5"
                         />
                 <Button Grid.Row="3" Content="{Binding BtnInfo4.Title.Value}"
                         Visibility="{Binding BtnInfo4.IsVisible.Value, Converter={StaticResource BoolToVisibility}}"
                         IsEnabled="{Binding BtnInfo4.IsEnable.Value}"
-                        Command="{Binding BtnInfo4.Clicked}"
+                        Command="{Binding BtnInfo4.Dcommand}"
                         Margin="5,5,5,5"
                         />
                 <Button Grid.Row="4" Content="{Binding BtnInfo5.Title.Value}"
                         Visibility="{Binding BtnInfo5.IsVisible.Value, Converter={StaticResource BoolToVisibility}}"
                         IsEnabled="{Binding BtnInfo5.IsEnable.Value}"
-                        Command="{Binding BtnInfo5.Clicked}"
+                        Command="{Binding BtnInfo5.Dcommand}"
                         Margin="5,5,5,5"
                         />
                 <Button Grid.Row="5" Content="{Binding BtnInfo6.Title.Value}"
                         Visibility="{Binding BtnInfo6.IsVisible.Value, Converter={StaticResource BoolToVisibility}}"
                         IsEnabled="{Binding BtnInfo6.IsEnable.Value}"
-                        Command="{Binding BtnInfo6.Clicked}"
+                        Command="{Binding BtnInfo6.Dcommand}"
                         Margin="5,5,5,5"
                         />
             </Grid>

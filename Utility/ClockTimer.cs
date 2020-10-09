@@ -7,13 +7,13 @@ namespace Utility
     /// クロックタイマー
     /// </summary>
     [Utility.Developer(name: "tokusan1015")]
-    public class ClockTimer
+    public class ClockTimer : IDisposable
     {
         #region privateプロパティ
         /// <summary>
         /// タイマー
         /// </summary>
-        private Timer _Timer { get; set; }
+        private Timer _Timer { get; set; } = new Timer(interval: 1000);
         #endregion privateプロパティ
 
         #region publicプロパティ
@@ -35,34 +35,12 @@ namespace Utility
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        /// <param name="interval">イベント間隔(ms)を設定します。</param>
-        public ClockTimer(
-            int interval = 1000
-            )
+        public ClockTimer()
         {
-            // タイマーを生成します。
-            this._Timer = new Timer(interval: interval)
-            {
-                // イベント発生を停止します。
-                Enabled = false
-            };
+            // イベント発生を停止します。
+            this._Timer.Enabled = false;
         }
         #endregion コンストラクタ
-
-        #region デストラクタ
-        /// <summary>
-        /// デストラクタ
-        /// </summary>
-        ~ClockTimer()
-        {
-            // タイマーを停止します。
-            this._Timer.Stop();
-            // タイマーを開放します。
-            this._Timer.Close();
-            this._Timer.Dispose();
-            this._Timer = null;
-        }
-        #endregion デストラクタ
 
         #region publicメソッド
         /// <summary>
@@ -80,7 +58,7 @@ namespace Utility
         /// イベント発生の購読を終了します。
         /// </summary>
         /// <param name="action">イベントハンドラを設定します。</param>
-        public void UnSubscribe(
+        public void Unsubscribe(
             ElapsedEventHandler eventHandler
             )
         {
@@ -111,5 +89,47 @@ namespace Utility
             this._Timer.Enabled = !this._Timer.Enabled;
         }
         #endregion publicメソッド
+
+        #region IDisposable Support
+        private bool disposedValue = false; // 重複する呼び出しを検出するには
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "<_Timer>k__BackingField")]
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: マネージド状態を破棄します (マネージド オブジェクト)。
+                    // タイマーを停止します。
+                    this._Timer.Stop();
+                    // タイマーを開放します。
+                    this._Timer.Close();
+                    this._Timer.Dispose();
+                    this._Timer = null;
+                }
+
+                // TODO: アンマネージド リソース (アンマネージド オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
+                // TODO: 大きなフィールドを null に設定します。
+
+                disposedValue = true;
+            }
+        }
+
+        // TODO: 上の Dispose(bool disposing) にアンマネージド リソースを解放するコードが含まれる場合にのみ、ファイナライザーをオーバーライドします。
+        // ~ClockTimer() {
+        //   // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
+        //   Dispose(false);
+        // }
+
+        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
+        public void Dispose()
+        {
+            // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
+            Dispose(true);
+            // TODO: 上のファイナライザーがオーバーライドされる場合は、次の行のコメントを解除してください。
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

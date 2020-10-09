@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
 
 namespace Utility
 {
@@ -8,110 +9,150 @@ namespace Utility
     /// 属性ユーティリティ
     /// </summary>
     [Utility.Developer(name: "tokusan1015")]
-    public class AttributeUtil
+    public static class AttributeUtil
     {
         #region 共通
+        #region GetClassAttribute
         /// <summary>
         /// 対象クラスの属性インスタンスを取得します。
         /// </summary>
         /// <param name="classType">対象のクラスタイプを設定します。</param>
+        /// <param name="attrType">属性タイプを設定します。</param>
         /// <returns>Attributeを返します。</returns>
-        public static TAttribute GetClassAttribute<TAttribute>(
-            [param: Required]Type classType
-            ) where TAttribute : Attribute
+        public static object GetClassAttribute(
+            [param: Required]MemberInfo classType,
+            [param: Required]Type attrType
+            )
         {
-            var attrType = typeof(TAttribute);
-            return (TAttribute)classType
-                .GetCustomAttributes(attrType, false).FirstOrDefault();
+            // nullチェック
+            if (classType == null)
+                throw new ArgumentNullException("classType");
+            if (attrType == null)
+                throw new ArgumentNullException("attrType");
+
+            return classType.GetCustomAttributes(attrType, false).FirstOrDefault();
         }
+        #endregion GetClassAttribute
+
+        #region GetPropertyAttribute
         /// <summary>
         /// 対象クラスのプロパティを取得します。
         /// </summary>
-        /// <typeparam name="TAttribute">属性クラスを設定します。</typeparam>
+        /// <param name="attrType">属性タイプを設定します。</param>
         /// <param name="classType">クラスタイプを設定します。</param>
         /// <param name="propertyName">プロパティ名を設定します。</param>
-        /// <param name="useAttr">BindingFlagsの使用の可否を設定します。</param>
+        /// <returns>設定した属性インスタンスが返ります。</returns>
+        //public static object GetPropertyAttribute(
+        //    [param: Required]Type attrType,
+        //    [param: Required]Type classType,
+        //    [param: Required]string propertyName
+        //    )
+        //{
+        //    // null チェック
+        //    if (attrType == null)
+        //        throw new ArgumentNullException("attrType");
+        //    if (classType == null)
+        //        throw new ArgumentNullException("classType");
+        //    if (propertyName == null)
+        //        throw new ArgumentNullException("propertyName");
+        //
+        //    PropertyInfo propertyInfo = classType.GetProperty(
+        //        name: propertyName
+        //        );
+        //
+        //    return propertyInfo?.GetCustomAttributes(attrType, false).FirstOrDefault();
+        //}
+        /// <summary>
+        /// 対象クラスのプロパティを取得します。
+        /// </summary>
+        /// <param name="attrType">属性タイプを設定します。</param>
+        /// <param name="classType">クラスタイプを設定します。</param>
+        /// <param name="propertyName">プロパティ名を設定します。</param>
         /// <param name="bindingAttr">BindingFlagsを設定します。</param>
         /// <returns>設定した属性インスタンスが返ります。</returns>
-        public static TAttribute GetPropertyAttribute<TAttribute>(
+        public static object GetPropertyAttribute(
+            [param: Required]Type attrType,
             [param: Required]Type classType,
-            string propertyName,
-            bool useAttr = false,
-            System.Reflection.BindingFlags bindingAttr = 
-                System.Reflection.BindingFlags.Public 
-                | System.Reflection.BindingFlags.NonPublic
-                | System.Reflection.BindingFlags.Static
-                | System.Reflection.BindingFlags.GetProperty
-                | System.Reflection.BindingFlags.SetProperty
-                | System.Reflection.BindingFlags.Instance
-            ) where TAttribute : Attribute
+            [param: Required]string propertyName,
+            BindingFlags bindingAttr
+            )
         {
-            var attrType = typeof(TAttribute);
-            System.Reflection.PropertyInfo propertyInfo = null;
+            // null チェック
+            if (attrType == null)
+                throw new ArgumentNullException("attrType");
+            if (classType == null)
+                throw new ArgumentNullException("classType");
+            if (propertyName == null)
+                throw new ArgumentNullException("propertyName");
 
-            if (useAttr)
-            {
-                propertyInfo = classType.GetProperty(
-                    name: propertyName,
-                    bindingAttr: bindingAttr
-                    );
-            }
-            else
-            {
-                propertyInfo = classType.GetProperty(
-                    name: propertyName
-                    );
-            }
+            PropertyInfo propertyInfo = classType.GetProperty(
+                name: propertyName,
+                bindingAttr: bindingAttr
+                );
 
-            if (propertyInfo == null)
-                throw new Exception($"propertyName : '{propertyName}'");
-
-            return (TAttribute)propertyInfo.GetCustomAttributes(attrType, false).FirstOrDefault();
+            return propertyInfo?.GetCustomAttributes(attrType, false).FirstOrDefault();
         }
+        #endregion GetPropertyAttribute
+
+        #region GetMethodAttribute
         /// <summary>
         /// 対象クラスのメソッドを取得します。
         /// </summary>
-        /// <typeparam name="TAttribute">属性クラスを設定します。</typeparam>
+        /// <param name="attrType">属性タイプを設定します。</param>
         /// <param name="classType">クラスタイプを設定します。</param>
         /// <param name="methodName">メソッド名を設定します。</param>
-        /// <param name="useAttr">BindingFlagsの使用の可否を設定します。</param>
+        /// <returns>設定した属性インスタンスが返ります。</returns>
+        //public static object GetMethodAttribute(
+        //    [param: Required]Type attrType,
+        //    [param: Required]Type classType,
+        //    [param: Required]string methodName
+        //    )
+        //{
+        //    // nullチェック
+        //    if (attrType == null)
+        //        throw new ArgumentNullException("attrType");
+        //    if (classType == null)
+        //        throw new ArgumentNullException("classType");
+        //    if (methodName == null)
+        //        throw new ArgumentNullException("methodName");
+        //
+        //    MethodInfo methodInfo = classType.GetMethod(
+        //        name: methodName
+        //        );
+        //
+        //    return methodInfo?.GetCustomAttributes(attrType, false).FirstOrDefault();
+        //}
+        /// <summary>
+        /// 対象クラスのメソッドを取得します。
+        /// </summary>
+        /// <param name="attrType">属性タイプを設定します。</param>
+        /// <param name="classType">クラスタイプを設定します。</param>
+        /// <param name="methodName">メソッド名を設定します。</param>
         /// <param name="bindingAttr">BindingFlagsを設定します。</param>
         /// <returns>設定した属性インスタンスが返ります。</returns>
-        public static TAttribute GetMethodAttribute<TAttribute>(
+        public static object GetMethodAttribute(
+            [param: Required]Type attrType,
             [param: Required]Type classType,
-            string methodName,
-            bool useAttr = false,
-            System.Reflection.BindingFlags bindingAttr =
-                System.Reflection.BindingFlags.Public
-                | System.Reflection.BindingFlags.NonPublic
-                | System.Reflection.BindingFlags.Static
-                | System.Reflection.BindingFlags.GetProperty
-                | System.Reflection.BindingFlags.SetProperty
-                | System.Reflection.BindingFlags.Instance
-            ) where TAttribute : Attribute
+            [param: Required]string methodName,
+            BindingFlags bindingAttr
+            )
         {
-            var attrType = typeof(TAttribute);
-            System.Reflection.MethodInfo methodInfo = null;
+            // nullチェック
+            if (attrType == null)
+                throw new ArgumentNullException("attrType");
+            if (classType == null)
+                throw new ArgumentNullException("classType");
+            if (methodName == null)
+                throw new ArgumentNullException("methodName");
 
-            if (useAttr)
-            {
-                methodInfo = classType.GetMethod(
-                    name: methodName,
-                    bindingAttr: bindingAttr
-                    );
-            }
-            else
-            {
-                methodInfo = classType.GetMethod(
-                    name: methodName
-                    );
-            }
-            
-            if (methodInfo == null)
-                throw new Exception($"methodName : '{methodName}'");
+            MethodInfo methodInfo = classType.GetMethod(
+                name: methodName,
+                bindingAttr: bindingAttr
+                );
 
-            return (TAttribute)methodInfo.GetCustomAttributes(attrType, false).First();
+            return methodInfo?.GetCustomAttributes(attrType, false).FirstOrDefault();
         }
+        #endregion GetMethodAttribute
         #endregion 共通
     }
 }

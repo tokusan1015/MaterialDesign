@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using MWAPICP = Microsoft.WindowsAPICodePack;
 
 namespace Utility
@@ -76,20 +77,22 @@ namespace Utility
         /// <param name="initialDirectory">初期ディレクトリを設定します。</param>
         /// <param name="isFolderPicker">フォルダ選択(true)とファイル選択(false)を切り替えます。</param>
         /// <returns>成功した場合はtrueを返します。</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool Show(
-            string title = "フォルダを選択してください",
-            string initialDirectory = "./",
+            [param: Required]string title = "フォルダを選択してください",
+            [param: Required]string initialDirectory = "./",
             bool isFolderPicker = true
             )
         {
+
             // フォルダ選択に設定します。(ファイル選択の場合はfalseに設定します。)
             this._dlg.IsFolderPicker = isFolderPicker;
             
             // タイトルを設定します。
-            this._dlg.Title = title;
+            this._dlg.Title = title ?? throw new ArgumentNullException("title");
 
             // 初期ディレクトリを設定します。
-            this._dlg.InitialDirectory = initialDirectory;
+            this._dlg.InitialDirectory = initialDirectory ?? throw new ArgumentNullException("initialDirectory");
 
             // ダイアログを表示します。
             if (this._dlg.ShowDialog() == MWAPICP::Dialogs.CommonFileDialogResult.Ok)
