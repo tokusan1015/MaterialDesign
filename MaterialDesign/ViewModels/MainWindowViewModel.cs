@@ -267,15 +267,11 @@ namespace MaterialDesign.ViewModels
         /// 自分宛のメッセージのみ受信します。
         /// </summary>
         /// <param name="message">受信メッセージ</param>
-        protected override void ReceivedMessage(string message)
+        protected override void ReceivedMessage(RPUtility.MessageSend messageSend)
         {
             // メッセージ受信処理を記述します。
-            // メッセージを解析します。
-            var (receiver, sender, value) = this.MessageManager
-                .AnalyseMessageCommand<EnumDatas.MessageCommand>(message);
-
             // コマンドに対応する処理を行います。 
-            switch (value)
+            switch (messageSend.Command)
             {
                 case EnumDatas.MessageCommand.InputError:
                     this.SetEnables(false, -1);

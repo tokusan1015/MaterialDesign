@@ -244,7 +244,7 @@ namespace MaterialDesignViews.ViewModels
         /// メッセージ受信イベント
         /// </summary>
         /// <param name="message">受信メッセージ</param>
-        protected override void ReceivedMessage(string message)
+        protected override void ReceivedMessage(RPUtility.MessageSend messageSend)
         {
             // メッセージ受信処理を記述します。
         }
@@ -266,7 +266,7 @@ namespace MaterialDesignViews.ViewModels
                 if (sender is ControlInfo<string> ci)
                 {
 #if DEBUG
-                    Console.WriteLine($"{ci.Title} : {ci.Data.Value}");
+                    Console.WriteLine($"{this.ViewName} : {ci.Title} : {ci.Data.Value}");
 #endif
                     // 入力項目の検証を行います。
                     this.CheckValidation(save: true);
@@ -290,7 +290,7 @@ namespace MaterialDesignViews.ViewModels
                 if (sender is ControlInfo<EnumDatas.Gender> ci)
                 {
 #if DEBUG
-                    Console.WriteLine($"{ci.Title} : {ci.Data.Value}");
+                    Console.WriteLine($"{this.ViewName} : {ci.Title} : {ci.Data.Value}");
 #endif
                     // 入力項目の検証を行います。
                     this.CheckValidation(save: true);
@@ -315,7 +315,7 @@ namespace MaterialDesignViews.ViewModels
                 if (sender is ControlInfo<string> ci)
                 {
 #if DEBUG
-                    Console.WriteLine($"{ci.Title}: {ci.Data.Value}");
+                    Console.WriteLine($"{this.ViewName} : {ci.Title}: {ci.Data.Value}");
 #endif
                     // 入力項目の検証を行います。
                     this.CheckValidation(save: true);

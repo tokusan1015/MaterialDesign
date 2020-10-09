@@ -211,7 +211,7 @@ namespace RPUtility
         /// 自分宛のメッセージのみ受信します。
         /// </summary>
         /// <param name="message">受信メッセージ</param>
-        protected abstract void ReceivedMessage(string message);
+        protected abstract void ReceivedMessage(RPUtility.MessageSend messageSend);
         #endregion メッセージ
 
         #region View Activation, Deactivation
@@ -613,10 +613,10 @@ namespace RPUtility
             }
 
             // メッセージ送信
-            this.MessageManager.Message = result ?
-                EnumDatas.MessageCommand.InputError.ToString()
-                : EnumDatas.MessageCommand.NoInputError.ToString();
-            this.MessageManager.SendMessage();
+            var command = result ?
+                EnumDatas.MessageCommand.InputError
+                : EnumDatas.MessageCommand.NoInputError;
+            this.MessageManager.SendMessage(messageCommand: command);
 
             return result;
         }
@@ -638,7 +638,7 @@ namespace RPUtility
                 if (err)
                 {
                     // エラー有り
-                    Console.WriteLine($"Input Error {cib.PropertyName}");
+                    Console.WriteLine($"{this.ViewName} : Input Error {cib.PropertyName} = {cib.GetValue()}");
                 }
 #endif
                 result |= err;

@@ -184,6 +184,13 @@ namespace RPUtility
         #endregion publicメソッド
 
         #region abstractメソッド
+#if DEBUG
+        /// <summary>
+        /// 値を取得します。
+        /// </summary>
+        /// <returns>結果を文字列として返します。</returns>
+        public abstract string GetValue();
+#endif
         /// <summary>
         /// 入力エラーが存在する場合trueを返します。
         /// 必要であるならば検証項目を追加します。
@@ -356,6 +363,24 @@ namespace RPUtility
         {
             return this.Data != null ? this.Data.HasErrors : false;
         }
+#if DEBUG
+        /// <summary>
+        /// 値を文字列として返します。
+        /// エラー用
+        /// </summary>
+        /// <returns></returns>
+        public override string GetValue()
+        {
+            if (this.Data != null)
+            {
+                if (this.Data.Value != null)
+                {
+                    return this.Data.Value.ToString();
+                }
+            }
+            return string.Empty;
+        }
+#endif
         #endregion publicメソッド
     }
 }

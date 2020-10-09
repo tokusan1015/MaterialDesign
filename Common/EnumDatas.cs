@@ -9,6 +9,10 @@
         public enum MessageCommand
         {
             /// <summary>
+            /// メッセージ
+            /// </summary>
+            Message,
+            /// <summary>
             /// 入力エラー有り
             /// </summary>
             InputError,

@@ -76,7 +76,7 @@ namespace RPUtility
         /// <param name="viewName">自身のViewNameを設定します。</param>
         public MessageManager(
             IEventAggregator eventAggregator,
-            Action<string> receivedMessage,
+            Action<RPUtility.MessageSend> receivedMessage,
             string mainViewName,
             string viewName
             )
@@ -102,7 +102,7 @@ namespace RPUtility
                     action: receivedMessage,
                     threadOption: ThreadOption.PublisherThread,
                     keepSubscriberReferenceAlive: false,
-                    filter: (filter) => filter.Contains(this.ViewName) || filter.Contains(SEND_ALL)
+                    filter: (filter) => filter.Reciever.Contains(this.ViewName)
                     );
         }
 
@@ -115,12 +115,14 @@ namespace RPUtility
             // メッセージ送信チェック
             if (!this.Start) return;
 
-            // メッセージ加工
-            var sendMessage = this.MakeSendMessage(
-                receiveName: this.MainViewName,
-                sendName: this.ViewName,
-                message: this.Message
-                );
+            // メッセージ生成
+            var sendMessage = new RPUtility.MessageSend()
+            {
+                Sender = this.ViewName,
+                Reciever = this.MainViewName,
+                Command = Common.EnumDatas.MessageCommand.Message,
+                Message = this.Message
+            };
 
             // メッセージ送信
             this.EventAggregator
@@ -128,61 +130,32 @@ namespace RPUtility
                 .Publish(payload: sendMessage);
         }
         /// <summary>
-        /// 送信フォーマットに対応した送信文字列を取得します。
+        /// メッセージをマスターに送信します。
         /// </summary>
-        /// <param name="receiveName">送信先名を設定します。</param>
-        /// <param name="sendName">送信元名を設定します。</param>
-        /// <param name="message">メッセージを設定します。</param>
-        /// <returns>送信文字列を返します。</returns>
-        public string MakeSendMessage(
-            string receiveName,
-            string sendName,
-            string message
+        /// <param name="messageCommand">メッセージコマンドを設定します。</param>
+        /// <param name="message">必要ならばメッセージを設定します。</param>
+        public void SendMessage(
+            Common.EnumDatas.MessageCommand messageCommand,
+            string message = ""
             )
         {
-            return string.Format(
-                SEND_FORMAT,    // 送信フォーマット
-                receiveName,    // 送信先
-                sendName,       // 送信元
-                message         // メッセージ
-                );
+            // メッセージ送信チェック
+            if (!this.Start) return;
+
+            // メッセージ生成
+            var sendMessage = new RPUtility.MessageSend()
+            {
+                Sender = this.ViewName,
+                Reciever = this.MainViewName,
+                Command = messageCommand,
+                Message = message
+            };
+
+            // メッセージ送信
+            this.EventAggregator
+                .GetEvent<RPUtility.MessageSendEvent>()
+                .Publish(payload: sendMessage);
         }
         #endregion 送信
-
-        #region 受信
-        /// <summary>
-        /// 受信メッセージを解析します。
-        /// "送信先 送信元 コマンド"形式である必要があります。
-        /// コマンドは列挙型で設定します。
-        /// </summary>
-        /// <typeparam name="TEnumType">コマンド解析用の列挙型を設定します。</typeparam>
-        /// <param name="message">メッセージを設定します。</param>
-        /// <returns>(送信先, 送信元, コマンド)形式で返します。</returns>
-        public (string receiver, string sender, TEnumType value) AnalyseMessageCommand<TEnumType>(
-            [param: Required]string message
-            ) where TEnumType : Enum
-        {
-            // 入力チェック
-            if (message == null) throw new ArgumentNullException("message");
-            var m = message.Split(' ');
-            if (m.Count() != 3) throw new ArgumentException("message format error.");
-
-            // 各項に設定
-            var receiver = m[0];
-            var sender = m[1];
-
-            // メッセージ解析
-            if (!Utility.EnumUtil.EnumIsDefined(
-                enumType: typeof(TEnumType),
-                value: m[2]
-                )) throw new ArgumentException($"not found '{m[2]}' command.");
-            var value = (TEnumType)Utility.EnumUtil.EnumParse(
-                enumType: typeof(TEnumType),
-                value: m[2]
-                );
-
-            return (receiver, sender, value);
-        }
-        #endregion 受信
     }
 }

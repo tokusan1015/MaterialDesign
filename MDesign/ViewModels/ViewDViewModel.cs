@@ -113,7 +113,7 @@ namespace MaterialDesignViews.ViewModels
         /// メッセージ受信イベント
         /// </summary>
         /// <param name="message">受信メッセージ</param>
-        protected override void ReceivedMessage(string message)
+        protected override void ReceivedMessage(RPUtility.MessageSend messageSend)
         {
             // メッセージ受信処理を記述します。
         }
