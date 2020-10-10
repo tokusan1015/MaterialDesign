@@ -64,10 +64,6 @@ namespace RPUtility
         /// リージョンを表します。
         /// </summary>
         protected IRegion Region { get; private set; } = null;
-        /// <summary>
-        /// エラー情報を表します。
-        /// </summary>
-        protected ViewErrInfo ViewErrInfo { get; } = new ViewErrInfo();
         #endregion Prism
 
         #region メッセージ
@@ -114,6 +110,7 @@ namespace RPUtility
         /// <summary>
         /// ControlInfoBaseリスト
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists")]
         protected List<RPUtility.ControlInfoBase> CibList { get; } = new List<RPUtility.ControlInfoBase>();
         #endregion　ControlInfo
 
@@ -177,6 +174,7 @@ namespace RPUtility
         /// </summary>
         /// <typeparam name="TView">登録するViewの型を設定します。</typeparam>
         /// <param name="viewName">呼び出し名称を設定します。</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
         protected void AddRegionAndViews<TView>(
             [param: Required]string viewName
             ) where TView : UserControl
@@ -641,11 +639,10 @@ namespace RPUtility
         /// CIBListに入力エラーが存在する場合trueを返します。
         /// </summary>
         /// <returns>CIBListに入力エラーが存在する場合trueを返します。</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:ローカライズされるパラメーターとしてリテラルを渡さない", MessageId = "System.Console.WriteLine(System.String)")]
         private bool HasErrors()
         {
             bool result = false;
-
-            this.ViewErrInfo.ErrorItem.Clear();
 
             foreach (var cib in this.CibList)
             {
@@ -695,16 +692,4 @@ namespace RPUtility
         /// </summary>
         public bool InputError { get; set; } = true;
     }
-
-    /// <summary>
-    /// Viewエラー情報クラス
-    /// </summary>
-    public class ViewErrInfo
-    {
-        /// <summary>
-        /// エラーのあったプロパティ名を保存します。
-        /// </summary>
-        public List<string> ErrorItem { get; } = new List<string>();
-    }
-
 }

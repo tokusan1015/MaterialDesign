@@ -96,6 +96,7 @@ namespace RPUtility
     /// <summary>
     /// コントロールの共通基底情報
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1012:AbstractTypesShouldNotHaveConstructors")]
     [Utility.Developer(name: "tokusan1015")]
     public abstract class ControlInfoBase
@@ -118,13 +119,13 @@ namespace RPUtility
         /// 表示非表示
         /// true=表示, false=非表示
         /// </summary>
-        public ReactivePropertySlim<bool> IsVisible { get; private set; } =
+        public ReactivePropertySlim<bool> IsVisible { get; } =
             new ReactivePropertySlim<bool>();
         /// <summary>
         /// 有効無効
         /// true=有効, false=無効
         /// </summary>
-        public ReactivePropertySlim<bool> IsEnable { get; private set; } =
+        public ReactivePropertySlim<bool> IsEnable { get; } =
             new ReactivePropertySlim<bool>();
         #endregion プロパティ
 
@@ -145,6 +146,7 @@ namespace RPUtility
         /// <param name="classType">クラスタイプを設定します。</param>
         /// <param name="propertyName">プロパティ名を設定します。</param>
         /// <returns>設定した属性インスタンスが返ります。</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         protected object GetPropertyAttribute(
             [param: Required]Type classType,
             [param: Required]string propertyName
@@ -189,6 +191,7 @@ namespace RPUtility
         /// 値を取得します。
         /// </summary>
         /// <returns>結果を文字列として返します。</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public abstract string GetValue();
 #endif
         /// <summary>
@@ -237,7 +240,7 @@ namespace RPUtility
         /// <summary>
         /// タイトル
         /// </summary>
-        public ReactivePropertySlim<string> Title { get; private set; } = null;
+        public ReactivePropertySlim<string> Title { get; private set; } = new ReactivePropertySlim<string>();
         #endregion Bindingプロパティ
 
         #region コンストラクタ
@@ -246,9 +249,6 @@ namespace RPUtility
         /// </summary>
         public ControlInfo()
         {
-            // ReactivePropertySlim生成
-            this.Title = new ReactivePropertySlim<string>();
-
             //　nullの場合のみ生成
             if (this.Dcommand == null)
             {
@@ -280,6 +280,7 @@ namespace RPUtility
         /// <param name="data">データを設定します。</param>
         /// <param name="onDcommand">コマンドEventHandlerを設定します。</param>
         /// <param name="onPropertyChangd">プロパティチェンジEventHandlerを設定します。</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public void SetAll(

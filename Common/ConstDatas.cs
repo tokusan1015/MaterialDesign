@@ -23,6 +23,7 @@ namespace Common
         /// <summary>
         /// CommonDatasのプロパティのBindingFlags
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
         public static readonly BindingFlags CommonDatasBindingFlags =
             BindingFlags.NonPublic
             | BindingFlags.Instance
@@ -31,6 +32,7 @@ namespace Common
         /// <summary>
         /// ControlInfoのプロパティのBindingFlags
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
         public static readonly BindingFlags ControlInfoBindingFlags =
             BindingFlags.Public
             | BindingFlags.Instance

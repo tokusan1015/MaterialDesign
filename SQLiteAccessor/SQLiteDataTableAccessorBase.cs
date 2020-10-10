@@ -12,7 +12,7 @@ namespace SQLiteAccessorBase
     /// SQLiteDataTableAccessor
     /// </summary>
     [Utility.Developer(name: "tokusan1015")]
-    public class SQLiteDataTableAccessorBase : SQLiteAccessBase
+    public class SQLiteDataTableAccessorBase : SQLiteAccessBase, IDisposable
     {
         #region プロパティ
         /// <summary>

@@ -12,6 +12,7 @@ namespace MaterialDesignViews.ViewModels
     /// <summary>
     /// ViewB用ViewModel
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
     [Utility.Developer(name: "tokusan1015")]
     public class ViewBViewModel : RPUtility.BindableBasePlus
     {

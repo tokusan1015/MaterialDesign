@@ -91,6 +91,7 @@ namespace Common
         /// 初期化処理
         /// </summary>
         /// <returns>Disposableに追加されたオブジェクト数を返します。</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:スコープを失う前にオブジェクトを破棄")]
         private int Initialize()
         {
             // Validation設定
@@ -129,6 +130,7 @@ namespace Common
         #region IDisposable Support
         private bool disposedValue = false; // 重複する呼び出しを検出するには
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "<Disposable>k__BackingField")]
         void Dispose(bool disposing)
         {
             if (!disposedValue)

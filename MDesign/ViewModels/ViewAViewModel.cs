@@ -14,6 +14,7 @@ namespace MaterialDesignViews.ViewModels
     /// <summary>
     /// ViewA用ViewModel
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
     [Utility.Developer(name: "tokusan1015")]
     public class ViewAViewModel : RPUtility.BindableBasePlus
     {
@@ -50,6 +51,7 @@ namespace MaterialDesignViews.ViewModels
         /// <summary>
         /// 年齢
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         [RPUtility.ControlInfo(
             displeyName: "年齢"
             , groupNo: 2
@@ -253,6 +255,8 @@ namespace MaterialDesignViews.ViewModels
         /// </summary>
         /// <param name="sender">送信元</param>
         /// <param name="e">送信パラメータ</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object,System.Object)")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:ローカライズされるパラメーターとしてリテラルを渡さない", MessageId = "System.Console.WriteLine(System.String)")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)")]
         private void OnComboChanged(
             object sender,
@@ -278,6 +282,8 @@ namespace MaterialDesignViews.ViewModels
         /// </summary>
         /// <param name="sender">送信元</param>
         /// <param name="e">送信パラメータ</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object,System.Object)")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:ローカライズされるパラメーターとしてリテラルを渡さない", MessageId = "System.Console.WriteLine(System.String)")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)")]
         private void OnRadioButtonChanged(
             object sender,
@@ -303,6 +309,7 @@ namespace MaterialDesignViews.ViewModels
         /// </summary>
         /// <param name="sender">送信元</param>
         /// <param name="e">送信パラメータ</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object,System.Object)")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:ローカライズされるパラメーターとしてリテラルを渡さない", MessageId = "System.Console.WriteLine(System.String)")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)")]
         private void OnPropertyChanged(

@@ -65,21 +65,21 @@ namespace MaterialDesignModels
         /// <returns>成功した場合trueを返します。</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         public bool SaveCommonDatas(
-            Common.CommonDatas commonDatas
+            Common.TableBase tableBase
             )
         {
             // nullチェック
-            if (commonDatas == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(commonDatas));
+            if (tableBase == null)
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(tableBase));
 
             // データ保存処理を行います。
             using (var sqla = new SQLiteAccessor())
             {
-                commonDatas.UpdateQueryDataValue(bindingAttr: Common.ConstDatas.CommonDatasBindingFlags);
-                commonDatas.MakeUpdateSql();
+                tableBase.UpdateQueryDataValue(bindingAttr: Common.ConstDatas.CommonDatasBindingFlags);
+                tableBase.MakeUpdateSql();
                 var list = new List<Utility.QueryData>
                 {
-                    commonDatas.QueryData
+                    tableBase.QueryData
                 };
                 sqla.Open();
                 sqla.ExecuteNonQuery(list);

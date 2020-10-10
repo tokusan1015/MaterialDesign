@@ -12,6 +12,7 @@ namespace MaterialDesignViews.ViewModels
     /// <summary>
     /// ViewC用ViewModel
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
     [Utility.Developer(name: "tokusan1015")]
     public class ViewCViewModel : RPUtility.BindableBasePlus
 	{
@@ -217,6 +218,7 @@ namespace MaterialDesignViews.ViewModels
         /// </summary>
         /// <param name="sender">送信元</param>
         /// <param name="e">送信パラメータ</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:ローカライズされるパラメーターとしてリテラルを渡さない", MessageId = "System.Console.WriteLine(System.String)")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)")]
         private void OnPropertyChanged(
             object sender,

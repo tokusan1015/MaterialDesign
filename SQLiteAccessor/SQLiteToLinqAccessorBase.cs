@@ -257,6 +257,7 @@ namespace SQLiteAccessorBase
         /// <typeparam name="TTable">テーブル構造定義クラスを設定します。</typeparam>
         /// <param name="action">レコードの検索関数(Linq to SQLite)を設定します。</param>
         /// <returns>結果をIQueryable形式で返します。</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public void Select<TTable>(
             [param: Required]Action<Table<TTable>> action
             ) where TTable : class
@@ -296,6 +297,7 @@ namespace SQLiteAccessorBase
         /// </summary>
         /// <typeparam name="TTable">テーブル構造定義クラスを設定します。</typeparam>
         /// <param name="action">レコードの更新関数を設定します。</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public void Update<TTable>(
             [param: Required]Action<Table<TTable>> action
             ) where TTable : class
@@ -336,6 +338,7 @@ namespace SQLiteAccessorBase
         /// </summary>
         /// <typeparam name="TTable">テーブル構造定義クラスを設定します。</typeparam>
         /// <param name="func">レコードの削除関数を設定します。</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public void Delete<TTable>(
             [param: Required]Func<Table<TTable>, IQueryable<TTable>> func
             ) where TTable : class
