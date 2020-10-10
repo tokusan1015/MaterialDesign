@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace Utility
 {
@@ -24,7 +25,7 @@ namespace Utility
         {
             // nullチェック
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(value));
 
             //if (data.Length <= 0) return def;
             return int.TryParse(value, out var o) ? o : def;
@@ -45,7 +46,7 @@ namespace Utility
         {
             // nullチェック
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(value));
 
             //if (data.Length <= 0) return def;
             return double.TryParse(value, out var o) ? o : def;
@@ -66,7 +67,7 @@ namespace Utility
         {
             // nullチェック
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(value));
 
             //if (data.Length <= 0) return def;
             return float.TryParse(value, out var o) ? o : def;
@@ -87,7 +88,7 @@ namespace Utility
         {
             // nullチェック
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(value));
 
             //if (data.Length <= 0) return def;
             return bool.TryParse(value: value, result: out var o) ? o : def;
@@ -110,7 +111,7 @@ namespace Utility
         {
             // nullチェック
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(value));
 
             return DateTime.TryParse(
                 s: value,
@@ -135,9 +136,9 @@ namespace Utility
         {
             // nullチェック
             if (list == null)
-                throw new ArgumentNullException("list");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(list));
             if (text == null)
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(text));
 
             for (int i = 0; i < list.Length; i++)
                 if (text == list[i]) return i;
@@ -155,7 +156,7 @@ namespace Utility
         {
             // nullチェック
             if (source == null)
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(source));
 
             string result = "";
             bool flag = false;     // 直前が' 'の場合true
@@ -189,7 +190,7 @@ namespace Utility
         {
             // nullチェック
             if (command == null)
-                throw new ArgumentNullException("command");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(command));
 
             var s = command.Split(' ');
             string Command = "";

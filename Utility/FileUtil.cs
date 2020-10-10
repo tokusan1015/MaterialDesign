@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace Utility
 {
@@ -24,7 +25,7 @@ namespace Utility
         {
             // nullチェック
             if (list == null)
-                throw new ArgumentNullException("list");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(list));
 
             try
             {

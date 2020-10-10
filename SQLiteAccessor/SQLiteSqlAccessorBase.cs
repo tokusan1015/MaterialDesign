@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data.SQLite;
+using System.Reflection;
 
 namespace SQLiteAccessorBase
 {
@@ -75,7 +76,7 @@ namespace SQLiteAccessorBase
         {
             // nullチェック
             if (queryDatas == null)
-                throw new ArgumentNullException("queryDatas");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(queryDatas));
 
             // 処理可能か調べます。
             this.CheckExecuteConnection();

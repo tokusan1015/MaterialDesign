@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using MWAPICP = Microsoft.WindowsAPICodePack;
 
 namespace Utility
@@ -89,10 +90,10 @@ namespace Utility
             this._dlg.IsFolderPicker = isFolderPicker;
             
             // タイトルを設定します。
-            this._dlg.Title = title ?? throw new ArgumentNullException("title");
+            this._dlg.Title = title ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(title));
 
             // 初期ディレクトリを設定します。
-            this._dlg.InitialDirectory = initialDirectory ?? throw new ArgumentNullException("initialDirectory");
+            this._dlg.InitialDirectory = initialDirectory ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(initialDirectory));
 
             // ダイアログを表示します。
             if (this._dlg.ShowDialog() == MWAPICP::Dialogs.CommonFileDialogResult.Ok)

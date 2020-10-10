@@ -10,6 +10,7 @@ using Prism.Ioc;
 using System.Windows.Controls;  // assembly:PresentationCore, PresentationFramework
 using Prism.Commands;
 using Prism.Events;
+using System.Reflection;
 
 namespace RPUtility
 {
@@ -140,13 +141,13 @@ namespace RPUtility
             )
         {
             // 拡張コンテナ、リージョンマネージャ、共通データの取得および設定をします。
-            this.Container = container ?? throw new ArgumentNullException("container");
-            this.RegionManager = regionManager ?? throw new ArgumentNullException("regionManager");
-            this.EventAggregator = eventAggregator ?? throw new ArgumentNullException("eventAggregator");
-            this.MainViewName = mainViewName ?? throw new ArgumentNullException("mainViewName");
-            this.ViewName = viewName ?? throw new ArgumentNullException("viewName");
+            this.Container = container ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(container));
+            this.RegionManager = regionManager ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(regionManager));
+            this.EventAggregator = eventAggregator ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(eventAggregator));
+            this.MainViewName = mainViewName ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(mainViewName));
+            this.ViewName = viewName ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewName));
             // objectからCommonDatasにキャストして設定します。
-            var cd = commonDatas ?? throw new ArgumentNullException("commonDatas");
+            var cd = commonDatas ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(commonDatas));
             this.CommonDatas = cd as Common.CommonDatas;
 
             // メッセージマネージャを設定します。
@@ -169,7 +170,7 @@ namespace RPUtility
             [param: Required]IRegion region
             )
         {
-            this.Region = region ?? throw new ArgumentNullException("region");
+            this.Region = region ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(region));
         }
         /// <summary>
         /// リージョンおよびViewsにViewを登録します。
@@ -181,7 +182,7 @@ namespace RPUtility
             ) where TView : UserControl
         {
             // nullチェック
-            if (viewName == null) throw new ArgumentNullException("viewName");
+            if (viewName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewName));
 
             // Viewを取得・登録します。
             var view = this.Container.Resolve<TView>();
@@ -211,7 +212,7 @@ namespace RPUtility
         /// 自分宛のメッセージのみ受信します。
         /// </summary>
         /// <param name="message">受信メッセージ</param>
-        protected abstract void ReceivedMessage(RPUtility.MessageSend messageSend);
+        protected abstract void ReceivedMessage(RPUtility.IEventParam eventParam);
         #endregion メッセージ
 
         #region View Activation, Deactivation
@@ -358,10 +359,14 @@ namespace RPUtility
         /// <param name="regionName">リージョン名を設定します。</param>
         /// <param name="source">遷移先名を設定します。</param>
         public void Navigate(
-            string regionName,
-            string target
+            [param: Required]string regionName,
+            [param: Required]string target
             )
         {
+            // nullチェック
+            if (regionName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(regionName));
+            if (target == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(target));
+
             // 画面遷移を実行します。
             this.RegionManager.RequestNavigate(
                 regionName: regionName,
@@ -377,11 +382,15 @@ namespace RPUtility
         /// <param name="target">遷移先名を設定します。</param>
         /// <param name="parameters">パラメータを設定します。</param>
         public void Navigate(
-            string regionName,
-            string target,
+            [param: Required]string regionName,
+            [param: Required]string target,
             NavigationParameters parameters
             )
         {
+            // nullチェック
+            if (regionName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(regionName));
+            if (target == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(target));
+
             if (parameters != null)
             {
                 this.RegionManager.RequestNavigate(
@@ -414,7 +423,7 @@ namespace RPUtility
         {
             // nullチェック
             if (navigationContext == null)
-                throw new ArgumentNullException("navigationContext");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(navigationContext));
 
             // nullチェック
             if (value != null)
@@ -440,7 +449,7 @@ namespace RPUtility
         {
             // nullチェック
             if (navigationContext == null)
-                throw new ArgumentNullException("navigationContext");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(navigationContext));
 
             return navigationContext.Parameters[PARAM_KEY_ALL];
         }
@@ -614,9 +623,16 @@ namespace RPUtility
 
             // メッセージ送信
             var command = result ?
-                EnumDatas.MessageCommand.InputError
-                : EnumDatas.MessageCommand.NoInputError;
-            this.MessageManager.SendMessage(messageCommand: command);
+                EnumDatas.InputStatus.InputError
+                : EnumDatas.InputStatus.NoInputError;
+            var eventParam = new InputStatusSend()
+            {
+                Reciever = this.MainViewName,
+                Sender = this.ViewName,
+                Command = command,
+                Message = ""
+            };
+            this.MessageManager.SendMessage(eventParam: eventParam);
 
             return result;
         }

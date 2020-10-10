@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 [assembly: CLSCompliant(true)]
 namespace SQLiteAccessorBase
@@ -40,7 +41,7 @@ namespace SQLiteAccessorBase
         {
             // nullチェック
             if (dataSource == null)
-                throw new ArgumentNullException("dataSource");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(dataSource));
 
             // データソースを設定します。
             if (dataSource.Length > 0)
@@ -212,9 +213,9 @@ namespace SQLiteAccessorBase
         {
             // nullチェック
             if (cmd == null)
-                throw new ArgumentNullException("cmd");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(cmd));
             if (queryData == null)
-                throw new ArgumentNullException("queryData");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(queryData));
 
             // パラメータクリア
             cmd.Parameters.Clear();

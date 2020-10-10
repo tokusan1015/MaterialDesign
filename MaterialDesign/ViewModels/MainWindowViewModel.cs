@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Linq;
 using System.Data.Linq;
 using Prism.Events;
+using System.Reflection;
 
 namespace MaterialDesign.ViewModels
 {
@@ -267,22 +268,61 @@ namespace MaterialDesign.ViewModels
         /// 自分宛のメッセージのみ受信します。
         /// </summary>
         /// <param name="message">受信メッセージ</param>
-        protected override void ReceivedMessage(RPUtility.MessageSend messageSend)
+        protected override void ReceivedMessage(
+            [param: Required]RPUtility.IEventParam eventParam
+            )
         {
-            // メッセージ受信処理を記述します。
-            // コマンドに対応する処理を行います。 
-            switch (messageSend.Command)
+            // nullチェック
+            if (eventParam == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(eventParam));
+
+            // クラス名を取得します。
+            var name = eventParam.EventType.Name;
+
+            // 受信メッセージを処理します。
+            switch (name)
             {
-                case EnumDatas.MessageCommand.InputError:
-                    this.SetEnables(false, -1);
-                    break;
-                case EnumDatas.MessageCommand.NoInputError:
-                    this.SetEnables(true, -1);
+                case "InputStatusSend":
+                    this.ProcessingInputStatusSend(eventParam: eventParam);
                     break;
                 default:
-                    throw new InvalidOperationException("command");
+                    throw new InvalidOperationException($"ReceivedMessage:{name}");
             }
         }
+        /// <summary>
+        /// InputErrorSendに対する処理を表します。
+        /// コメント：BindableBasePlusに入れるべきか？
+        /// </summary>
+        /// <param name="eventParam">IEventParamを設定します。</param>
+        private void ProcessingInputStatusSend(
+            [param: Required]RPUtility.IEventParam eventParam
+            )
+        {
+            // nullチェック
+            if (eventParam == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(eventParam));
+
+            // IEventParamをキャストします。
+            var param = eventParam as RPUtility.InputStatusSend;
+
+            // コマンドに対応する処理を行います。 
+            switch (param.Command)
+            {
+                case EnumDatas.InputStatus.InputError:
+                    // InputErrorの場合はボタンを使用禁止にします。
+                    this.SetEnables(false, -1);
+                    break;
+                case EnumDatas.InputStatus.NoInputError:
+                    // NoInputErrorの場合はボタンを使用許可にします。
+                    this.SetEnables(true, -1);
+                    break;
+                case EnumDatas.InputStatus.Message:
+                    // Messageの場合は実装していません。
+                    throw new NotImplementedException();
+                default:
+                    // 不明の場合は例外を発生します。
+                    throw new InvalidOperationException(nameof(param.Command));
+            }
+        }
+
         /// <summary>
         /// BtnInfoボタンクリックイベント
         /// 全てのボタン押下がここに来るように設定しています。

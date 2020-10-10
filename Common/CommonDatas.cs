@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.Linq.Mapping;
 using System.Data.SQLite;
+using System.Reflection;
 
 namespace Common
 {
@@ -198,7 +199,7 @@ namespace Common
             )
         {
             // nullチェック
-            if (commonDatas == null) throw new ArgumentNullException("commonDatas");
+            if (commonDatas == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(commonDatas));
 
             this.Id = commonDatas.Id;
             this.LastName = commonDatas.LastName;
@@ -225,7 +226,7 @@ namespace Common
         {
             // nullチェック
             if (reader == null)
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(reader));
 
             var result = new List<CommonDatas>();
             // 先頭の１件のみを処理します。
@@ -261,7 +262,7 @@ namespace Common
         {
             // nullチェック
             if (dataRow == null)
-                throw new ArgumentNullException("dataRow");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(dataRow));
 
             this.Id = Utility.StringUtil.IntdataParse(dataRow["Id"].ToString());
             this.LastName = dataRow["LastName"].ToString();
@@ -290,7 +291,7 @@ namespace Common
         {
             // nullチェック
             if (viewAdatas == null)
-                throw new ArgumentNullException("viewAdatas");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewAdatas));
 
             this.Id = viewAdatas.Key;
             this.LastName = viewAdatas.LastName.Value;
@@ -310,7 +311,7 @@ namespace Common
         {
             // nullチェック
             if (viewAdatas == null)
-                throw new ArgumentNullException("viewAdatas");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewAdatas));
 
             viewAdatas.Key = this.Id;
             viewAdatas.LastName.Value = this.LastName;
@@ -333,7 +334,7 @@ namespace Common
         {
             // nullチェック
             if (viewBdatas == null)
-                throw new ArgumentNullException("viewBdatas");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewBdatas));
 
             this.Id = viewBdatas.Key;
             this.Prefectures = viewBdatas.Prefectures.Value;
@@ -352,7 +353,7 @@ namespace Common
         {
             // nullチェック
             if (viewBdatas == null)
-                throw new ArgumentNullException("viewBdatas");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewBdatas));
 
             viewBdatas.Key = this.Id;
             viewBdatas.Prefectures.Value = this.Prefectures;
@@ -373,7 +374,7 @@ namespace Common
         {
             // nullチェック
             if (viewCdatas == null)
-                throw new ArgumentNullException("viewCdatas");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewCdatas));
 
             this.Id = viewCdatas.Key;
             this.SavePath = viewCdatas.SavePath.Value;
@@ -390,7 +391,7 @@ namespace Common
         {
             // nullチェック
             if (viewCdatas == null)
-                throw new ArgumentNullException("viewCdatas");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewCdatas));
 
             viewCdatas.Key = this.Id;
             viewCdatas.SavePath.Value = this.SavePath;

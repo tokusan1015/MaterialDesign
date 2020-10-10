@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Data.Linq;
 using System.Data.SQLite;
 using System.Linq;
+using System.Reflection;
 
 namespace SQLiteAccessorBase
 {
@@ -104,7 +105,7 @@ namespace SQLiteAccessorBase
         {
             // nullチェック
             if (queryData == null)
-                throw new ArgumentNullException("queryData");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(queryData));
 
             try
             {
@@ -186,7 +187,7 @@ namespace SQLiteAccessorBase
         {
             // nullチェック
             if (queryDatas == null)
-                throw new ArgumentNullException("queryDatas");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(queryDatas));
 
             try
             {
@@ -262,7 +263,7 @@ namespace SQLiteAccessorBase
         {
             // nullチェック
             if (action == null)
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(action));
 
             try
             {
@@ -301,7 +302,7 @@ namespace SQLiteAccessorBase
         {
             // nullチェック
             if (action == null)
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(action));
 
             try
             {
@@ -341,7 +342,7 @@ namespace SQLiteAccessorBase
         {
             // nullチェック
             if (func == null)
-                throw new ArgumentNullException("func");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(func));
 
             try
             {

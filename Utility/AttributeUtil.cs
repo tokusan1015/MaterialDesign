@@ -26,9 +26,9 @@ namespace Utility
         {
             // nullチェック
             if (classType == null)
-                throw new ArgumentNullException("classType");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(classType));
             if (attrType == null)
-                throw new ArgumentNullException("attrType");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(attrType));
 
             return classType.GetCustomAttributes(attrType, false).FirstOrDefault();
         }
@@ -50,11 +50,11 @@ namespace Utility
         //{
         //    // null チェック
         //    if (attrType == null)
-        //        throw new ArgumentNullException("attrType");
+        //        throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(attrType");
         //    if (classType == null)
-        //        throw new ArgumentNullException("classType");
+        //        throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(classType");
         //    if (propertyName == null)
-        //        throw new ArgumentNullException("propertyName");
+        //        throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(propertyName");
         //
         //    PropertyInfo propertyInfo = classType.GetProperty(
         //        name: propertyName
@@ -79,11 +79,11 @@ namespace Utility
         {
             // null チェック
             if (attrType == null)
-                throw new ArgumentNullException("attrType");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(attrType));
             if (classType == null)
-                throw new ArgumentNullException("classType");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(classType));
             if (propertyName == null)
-                throw new ArgumentNullException("propertyName");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(propertyName));
 
             PropertyInfo propertyInfo = classType.GetProperty(
                 name: propertyName,
@@ -110,11 +110,11 @@ namespace Utility
         //{
         //    // nullチェック
         //    if (attrType == null)
-        //        throw new ArgumentNullException("attrType");
+        //        throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(attrType");
         //    if (classType == null)
-        //        throw new ArgumentNullException("classType");
+        //        throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(classType");
         //    if (methodName == null)
-        //        throw new ArgumentNullException("methodName");
+        //        throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(methodName");
         //
         //    MethodInfo methodInfo = classType.GetMethod(
         //        name: methodName
@@ -139,11 +139,11 @@ namespace Utility
         {
             // nullチェック
             if (attrType == null)
-                throw new ArgumentNullException("attrType");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(attrType));
             if (classType == null)
-                throw new ArgumentNullException("classType");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(classType));
             if (methodName == null)
-                throw new ArgumentNullException("methodName");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(methodName));
 
             MethodInfo methodInfo = classType.GetMethod(
                 name: methodName,

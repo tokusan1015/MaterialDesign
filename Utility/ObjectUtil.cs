@@ -33,7 +33,7 @@ namespace Utility
         {
             // nullチェック
             if (func == null)
-                throw new ArgumentNullException("func");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(func));
 
             return ((MemberExpression)func.Body).Member.Name;
         }
@@ -53,9 +53,9 @@ namespace Utility
         //{
         //    // nullチェック
         //    if (target == null)
-        //        throw new ArgumentNullException("target");
+        //        throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(target");
         //    if (name == null)
-        //        throw new ArgumentNullException("name");
+        //        throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(name");
         //
         //    // プロパティ値を返します。
         //    return target.GetType().GetProperty(name: name)
@@ -76,9 +76,9 @@ namespace Utility
         {
             // nullチェック
             if (target == null)
-                throw new ArgumentNullException("target");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(target));
             if (name == null)
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(name));
 
             // プロパティ値を返します。
             return target.GetType().GetProperty(name: name, bindingAttr: bindingAttr)
@@ -101,9 +101,9 @@ namespace Utility
         //{
         //    // nullチェック
         //    if (target == null)
-        //        throw new ArgumentNullException("target");
+        //        throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(target");
         //    if (name == null)
-        //        throw new ArgumentNullException("name");
+        //        throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(name");
         //
         //    // プロパティに値を設定します。
         //    target.GetType().GetProperty(name: name)
@@ -125,9 +125,9 @@ namespace Utility
         {
             // nullチェック
             if (target == null)
-                throw new ArgumentNullException("target");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(target));
             if (name == null)
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(name));
 
             // プロパティに値を設定します。
             target.GetType().GetProperty(name: name, bindingAttr: bindingAttr)
@@ -147,7 +147,7 @@ namespace Utility
         //{
         //    // nullチェック
         //    if (classType == null)
-        //        throw new ArgumentNullException("classType");
+        //        throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(classType");
 
         //    // プロパティ名一覧を返します。
         //    return classType.GetProperties()
@@ -167,7 +167,7 @@ namespace Utility
         {
             // nullチェック
             if (classType == null)
-                throw new ArgumentNullException("classType");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(classType));
 
             // プロパティ名一覧を返します。
             return classType.GetProperties(bindingAttr: bindingAttr)
@@ -188,7 +188,7 @@ namespace Utility
         //{
         //    // nullチェック
         //    if (classType == null)
-        //        throw new ArgumentNullException("classType");
+        //        throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(classType");
 
         //    return classType.GetMethods()
         //        .Select(x => x.Name)
@@ -207,7 +207,7 @@ namespace Utility
         {
             // nullチェック
             if (classType == null)
-                throw new ArgumentNullException("classType");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(classType));
 
             return classType.GetMethods(bindingAttr: bindingAttr)
                 .Select(x => x.Name)
@@ -233,9 +233,9 @@ namespace Utility
         {
             // nullチェック
             if (source == null)
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(source));
             if (dest == null)
-                throw new ArgumentNullException("dest");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(dest));
 
             // タイプを取得します。
             var sType = source.GetType();

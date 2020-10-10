@@ -244,7 +244,7 @@ namespace MaterialDesignViews.ViewModels
         /// メッセージ受信イベント
         /// </summary>
         /// <param name="message">受信メッセージ</param>
-        protected override void ReceivedMessage(RPUtility.MessageSend messageSend)
+        protected override void ReceivedMessage(RPUtility.IEventParam eventParam)
         {
             // メッセージ受信処理を記述します。
         }
@@ -279,7 +279,8 @@ namespace MaterialDesignViews.ViewModels
         /// <param name="sender">送信元</param>
         /// <param name="e">送信パラメータ</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)")]
-        private void OnRadioButtonChanged(object sender,
+        private void OnRadioButtonChanged(
+            object sender,
             ControlInfoEventArgs e
             )
         {
@@ -304,7 +305,8 @@ namespace MaterialDesignViews.ViewModels
         /// <param name="e">送信パラメータ</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:ローカライズされるパラメーターとしてリテラルを渡さない", MessageId = "System.Console.WriteLine(System.String)")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)")]
-        private void OnPropertyChanged(object sender,
+        private void OnPropertyChanged(
+            object sender,
             RPUtility.ControlInfoEventArgs e
             )
         {

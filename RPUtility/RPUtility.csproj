@@ -124,7 +124,7 @@
     <Compile Include="ControlInfo.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MessageManager.cs" />
-    <Compile Include="MessageSendEvent.cs" />
+    <Compile Include="CommonEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ValidationAttributeModels.cs" />
   </ItemGroup>

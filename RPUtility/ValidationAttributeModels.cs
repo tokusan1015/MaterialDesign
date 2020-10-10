@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace RPUtility
 {
@@ -22,7 +23,7 @@ namespace RPUtility
         {            
             // nullチェック
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(value));
 
             return Utility.StringUtil.IntdataParse(
                 value: value.ToString()
@@ -49,7 +50,7 @@ namespace RPUtility
         {
             // nullチェック
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(value));
 
             return Utility.StringUtil.DoubledataParse(
                 value: value.ToString()
@@ -75,7 +76,7 @@ namespace RPUtility
         {
             // nullチェック
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(value));
 
             return Utility.StringUtil.BooleanParse(
                 value: value.ToString()
@@ -102,7 +103,7 @@ namespace RPUtility
         {
             // nullチェック
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(value));
 
             return Utility.StringUtil.DateTimeParse(
                 value: value.ToString()

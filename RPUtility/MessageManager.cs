@@ -1,19 +1,15 @@
 ﻿using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
-using Reactive.Bindings;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace RPUtility
 {
     /// <summary>
     /// PrismでViewからMainViewに対してメッセージを送受信するクラスです。
+    /// CommonEventで送受信を行います。
     /// 送信先名を"ALL"にすると全Viewに対して送信します。
     /// Messageには、"コマンド"を設定します。
     /// コマンドは列挙型で宣言しておきます。
@@ -37,10 +33,12 @@ namespace RPUtility
         private IEventAggregator EventAggregator { get; } = null;
 
         /// <summary>
-        /// メッセージコマンドを表します。
-        /// "送信先 送信元 コマンド"形式で設定します。
+        /// 入力ステータス送信コマンドを表します。
+        /// 入力ステータスを文字列で設定します。
+        /// Common.EnumDatas.InputStatus
+        /// 追加するイベントがある場合DelegeteCommandを増やして下さい。
         /// </summary>
-        public DelegateCommand SendMessageCommand { get; } = null;
+        public DelegateCommand InputStatusSendCommand { get; } = null;
 
         /// <summary>
         /// MainViewの名前を表します。
@@ -54,8 +52,9 @@ namespace RPUtility
 
         /// <summary>
         /// 送信するメッセージを表します。
+        /// XALMとBindingする用
         /// </summary>
-        private string _message = "Message to Send";
+        private string _message = "MainView ViewA NoInputError";
         public string Message
         {
             get { return _message; }
@@ -75,33 +74,34 @@ namespace RPUtility
         /// <param name="mainViewName">MainView名を設定します。</param>
         /// <param name="viewName">自身のViewNameを設定します。</param>
         public MessageManager(
-            IEventAggregator eventAggregator,
-            Action<RPUtility.MessageSend> receivedMessage,
-            string mainViewName,
-            string viewName
-            )
+            [param: Required]IEventAggregator eventAggregator,
+            [param: Required]Action<RPUtility.IEventParam> receivedMessage,
+            [param: Required]string mainViewName,
+            [param: Required]string viewName
+            ) 
         {
             // nullチェック
-            this.EventAggregator = eventAggregator ?? throw new ArgumentNullException("eventAggregator");
-            if (receivedMessage == null) throw new ArgumentNullException("receivedMessage");
-            if (mainViewName == null) throw new ArgumentNullException("mainViewName");
-            if (viewName == null) throw new ArgumentNullException("viewName");
+            this.EventAggregator = eventAggregator ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(eventAggregator));
+            if (receivedMessage == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(receivedMessage));
+            if (mainViewName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(mainViewName));
+            if (viewName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewName));
 
             // 文字数チェック
-            if (mainViewName.Trim().Length < 1) throw new InvalidOperationException("mainViewName is Empty");
-            if (viewName.Trim().Length < 1) throw new InvalidOperationException("viewName is Empty");
+            if (mainViewName.Trim().Length < 1) throw new InvalidOperationException(nameof(mainViewName) + " is Empty");
+            if (viewName.Trim().Length < 1) throw new InvalidOperationException(nameof(viewName) + " is Empty");
 
             // 内部保存
             this.MainViewName = mainViewName;
             this.ViewName = viewName;
 
             // メッセージ送信・受信を設定します。
-            this.SendMessageCommand = new DelegateCommand(this.SendMessage);
-            this.EventAggregator.GetEvent<RPUtility.MessageSendEvent>()
+            this.InputStatusSendCommand = new DelegateCommand(this.InputStatusSend);
+            this.EventAggregator.GetEvent<CommonEvent>()
                 .Subscribe(
                     action: receivedMessage,
                     threadOption: ThreadOption.PublisherThread,
                     keepSubscriberReferenceAlive: false,
+                    // 送信先でフィルターしています。
                     filter: (filter) => filter.Reciever.Contains(this.ViewName)
                     );
         }
@@ -109,52 +109,47 @@ namespace RPUtility
         #region 送信
         /// <summary>
         /// メッセージをマスターに送信します。
+        /// XAMLからの送信用です。
+        /// 追加するイベントがある場合は増やしてください。
+        /// ***************************************
+        /// プログラムからはコールしないでください。
+        /// ***************************************
         /// </summary>
-        public void SendMessage()
+        private void InputStatusSend()
         {
-            // メッセージ送信チェック
-            if (!this.Start) return;
-
             // メッセージ生成
-            var sendMessage = new RPUtility.MessageSend()
+            var eventParam = new InputStatusSend()
             {
                 Sender = this.ViewName,
                 Reciever = this.MainViewName,
-                Command = Common.EnumDatas.MessageCommand.Message,
+                Command = Common.EnumDatas.InputStatus.Message,
                 Message = this.Message
             };
 
             // メッセージ送信
-            this.EventAggregator
-                .GetEvent<RPUtility.MessageSendEvent>()
-                .Publish(payload: sendMessage);
+            this.SendMessage(eventParam: eventParam);
         }
         /// <summary>
-        /// メッセージをマスターに送信します。
+        /// メッセージを送信先に送信します。
+        /// プログラム上からはこちらを使用します。
         /// </summary>
+        /// <param name="reciever">送信先を設定します。</param>
         /// <param name="messageCommand">メッセージコマンドを設定します。</param>
         /// <param name="message">必要ならばメッセージを設定します。</param>
-        public void SendMessage(
-            Common.EnumDatas.MessageCommand messageCommand,
-            string message = ""
-            )
+        public void SendMessage<TEventParam>(
+            [param: Required]TEventParam eventParam
+            ) where TEventParam : IEventParam
         {
+            // nullチェック
+            if (eventParam == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(eventParam));
+
             // メッセージ送信チェック
             if (!this.Start) return;
 
-            // メッセージ生成
-            var sendMessage = new RPUtility.MessageSend()
-            {
-                Sender = this.ViewName,
-                Reciever = this.MainViewName,
-                Command = messageCommand,
-                Message = message
-            };
-
             // メッセージ送信
             this.EventAggregator
-                .GetEvent<RPUtility.MessageSendEvent>()
-                .Publish(payload: sendMessage);
+                .GetEvent<CommonEvent>()
+                .Publish(payload: eventParam);
         }
         #endregion 送信
     }

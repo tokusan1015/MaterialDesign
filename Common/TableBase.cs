@@ -64,7 +64,7 @@ namespace Common
         {
             // nullチェック
             if (where == null)
-                throw new ArgumentNullException("where");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(where));
 
             return this.QueryData.MakeUpdateSql(where: where);
         }
@@ -108,7 +108,7 @@ namespace Common
         {
             // nullチェック
             if (where == null)
-                throw new ArgumentNullException("where");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(where));
 
             return this.QueryData.MakeDeleteSql(where: where);
         }

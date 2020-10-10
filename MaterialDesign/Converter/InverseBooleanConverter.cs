@@ -32,7 +32,12 @@ namespace MaterialDesign.Converter
         /// <param name="parameter"></param>
         /// <param name="culture"></param>
         /// <returns></returns>
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(
+            object value,
+            Type targetType,
+            object parameter,
+            CultureInfo culture
+            )
         {
             return !(value is bool && (bool)value);
         }
@@ -45,7 +50,12 @@ namespace MaterialDesign.Converter
         /// <param name="parameter"></param>
         /// <param name="culture"></param>
         /// <returns></returns>
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(
+            object value,
+            Type targetType,
+            object parameter,
+            CultureInfo culture
+            )
         {
             return !(value is bool && (bool)value);
         }

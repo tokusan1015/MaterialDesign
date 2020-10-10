@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Reflection;
 
 namespace MaterialDesignModels
 {
@@ -15,18 +16,18 @@ namespace MaterialDesignModels
         /// DBからCommonDatasをロードします。
         /// 共通データのKeyを設定しておく必要があります。
         /// </summary>
-        /// <param name="cd">共通データオブジェクトを設定します。</param>
+        /// <param name="commonDatas">共通データオブジェクトを設定します。</param>
         /// <returns>成功した場合trueを返します。</returns>
         public bool LoadCommonDatas(
-            Common.CommonDatas cd
+            Common.CommonDatas commonDatas
             )
         {
             // nullチェック
-            if (cd == null)
-                throw new ArgumentNullException("cd");
+            if (commonDatas == null)
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(commonDatas));
 
             // 国籍コンボボックス
-            this.SetCountry(cd);
+            this.SetCountry(commonDatas);
 
             // SQL生成用として生成
             var c = new Common.CommonDatas();
@@ -47,7 +48,7 @@ namespace MaterialDesignModels
             }
 
             var cu = list[0];
-            cd.SetCommonDatas(cu);
+            commonDatas.SetCommonDatas(cu);
 
             cu.MakeInsertSql();
             cu.MakeSelectSql();
@@ -60,25 +61,25 @@ namespace MaterialDesignModels
         /// <summary>
         /// 共通データをDBに保存します。
         /// </summary>
-        /// <param name="cd">共通データオブジェクトを設定します。</param>
+        /// <param name="commonDatas">共通データオブジェクトを設定します。</param>
         /// <returns>成功した場合trueを返します。</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         public bool SaveCommonDatas(
-            Common.CommonDatas cd
+            Common.CommonDatas commonDatas
             )
         {
             // nullチェック
-            if (cd == null)
-                throw new ArgumentNullException("cd");
+            if (commonDatas == null)
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(commonDatas));
 
             // データ保存処理を行います。
             using (var sqla = new SQLiteAccessor())
             {
-                cd.UpdateQueryDataValue(bindingAttr: Common.ConstDatas.CommonDatasBindingFlags);
-                cd.MakeUpdateSql();
+                commonDatas.UpdateQueryDataValue(bindingAttr: Common.ConstDatas.CommonDatasBindingFlags);
+                commonDatas.MakeUpdateSql();
                 var list = new List<Utility.QueryData>
                 {
-                    cd.QueryData
+                    commonDatas.QueryData
                 };
                 sqla.Open();
                 sqla.ExecuteNonQuery(list);
@@ -87,18 +88,18 @@ namespace MaterialDesignModels
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        private void SetCountry(Common.CommonDatas cd)
+        private void SetCountry(Common.CommonDatas commonDatas)
         {
-            if (cd == null)
-                throw new ArgumentNullException("cd");
+            if (commonDatas == null)
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(commonDatas));
 
-            cd.CountryDic.Add("CA", "カナダ");
-            cd.CountryDic.Add("DE", "ドイツ");
-            cd.CountryDic.Add("FR", "フランス");
-            cd.CountryDic.Add("GB", "イギリス");
-            cd.CountryDic.Add("IT", "イタリア");
-            cd.CountryDic.Add("JP", "日本");
-            cd.CountryDic.Add("US", "アメリカ合衆国");
+            commonDatas.CountryDic.Add("CA", "カナダ");
+            commonDatas.CountryDic.Add("DE", "ドイツ");
+            commonDatas.CountryDic.Add("FR", "フランス");
+            commonDatas.CountryDic.Add("GB", "イギリス");
+            commonDatas.CountryDic.Add("IT", "イタリア");
+            commonDatas.CountryDic.Add("JP", "日本");
+            commonDatas.CountryDic.Add("US", "アメリカ合衆国");
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Data;
 
@@ -44,14 +45,14 @@ namespace MaterialDesign.Converter
         {
             // nullチェック
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(value));
             /*
             if (targetType == null)
-                throw new ArgumentNullException("targetType");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(targetType");
             if (parameter == null)
-                throw new ArgumentNullException("parameter");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(parameter");
             if (culture == null)
-                throw new ArgumentNullException("culture");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(culture");
             */
 
             if (!(parameter is string parameterString))
@@ -72,7 +73,12 @@ namespace MaterialDesign.Converter
         /// <param name="parameter"></param>
         /// <param name="culture"></param>
         /// <returns></returns>
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(
+            object value,
+            Type targetType,
+            object parameter,
+            CultureInfo culture
+            )
         {
             if (!(parameter is string parameterString))
                 return DependencyProperty.UnsetValue;

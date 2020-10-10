@@ -6,7 +6,10 @@
     [Utility.Developer(name: "tokusan1015")]
     public static class EnumDatas
     {
-        public enum MessageCommand
+        /// <summary>
+        /// 入力ステータス
+        /// </summary>
+        public enum InputStatus
         {
             /// <summary>
             /// メッセージ

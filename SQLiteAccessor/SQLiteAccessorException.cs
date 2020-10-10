@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 
@@ -87,7 +88,7 @@ namespace SQLiteAccessorBase
             )
         {
             if (info == null)
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(info));
 
             info.AddValue("CallerMemberName", this.CallerMemberName);
 
