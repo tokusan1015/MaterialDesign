@@ -87,8 +87,8 @@ namespace RPUtility
             if (viewName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewName));
 
             // 文字数チェック
-            if (mainViewName.Trim().Length < 1) throw new InvalidOperationException(nameof(mainViewName) + " is Empty");
-            if (viewName.Trim().Length < 1) throw new InvalidOperationException(nameof(viewName) + " is Empty");
+            if (mainViewName.Trim().Length < 1) throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +nameof(mainViewName) + " is Empty");
+            if (viewName.Trim().Length < 1) throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewName) + " is Empty");
 
             // 内部保存
             this.MainViewName = mainViewName;

@@ -285,7 +285,7 @@ namespace MaterialDesign.ViewModels
                     this.ProcessingInputStatusSend(eventParam: eventParam);
                     break;
                 default:
-                    throw new InvalidOperationException($"ReceivedMessage:{name}");
+                    throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +$"ReceivedMessage:{name}");
             }
         }
         /// <summary>
@@ -319,7 +319,7 @@ namespace MaterialDesign.ViewModels
                     throw new NotImplementedException();
                 default:
                     // 不明の場合は例外を発生します。
-                    throw new InvalidOperationException(nameof(param.Command));
+                    throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +nameof(param.Command));
             }
         }
 
@@ -375,7 +375,7 @@ namespace MaterialDesign.ViewModels
                     this.ExitApplication();
                     break;
                 default:
-                    throw new InvalidOperationException($"存在しないコマンドが指定されました。Command={Command}");
+                    throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +$"存在しないコマンドが指定されました。Command={Command}");
             }
         }
         #endregion イベント

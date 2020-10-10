@@ -218,7 +218,7 @@ namespace SQLiteAccessorBase
                             {
                                 // ロールバックします。
                                 transaction.Rollback();
-                                throw new InvalidOperationException($"レコード挿入に失敗しました。\n SQL={queryData.Query}\n");
+                                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +$"レコード挿入に失敗しました。\n SQL={queryData.Query}\n");
                             }
                         }
                     }

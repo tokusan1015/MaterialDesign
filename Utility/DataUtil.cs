@@ -156,7 +156,7 @@ namespace Utility
         {
             // Paramがnullの場合例外を発生します。
             if (this._param == null)
-                throw new InvalidOperationException("_param is null.");
+                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +"_param is null.");
 
             string result = "";
             var calist = this._param.Select(x => x.ColumnName).ToArray();
@@ -180,7 +180,7 @@ namespace Utility
         {
             // Paramがnullの場合例外を発生します。
             if (this._param == null)
-                throw new InvalidOperationException("_param is null.");
+                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +"_param is null.");
 
             // テーブル生成用SQL文字列
             var sb = new StringBuilder();
@@ -232,7 +232,7 @@ namespace Utility
         {
             // nullチェック
             if (this._param == null)
-                throw new InvalidOperationException("_param is null.");
+                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +"_param is null.");
             if (where == null)
                 throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(where));
             if (orderby == null)
@@ -287,7 +287,7 @@ namespace Utility
         {
             // Paramがnullの場合例外を発生します。
             if (this._param == null)
-                throw new InvalidOperationException("_param is null.");
+                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +"_param is null.");
 
             const string INSERT = @"INSERT INTO {0}({1})VALUES({2});";
 
@@ -332,7 +332,7 @@ namespace Utility
         {
             // nullチェック
             if (this._param == null)
-                throw new InvalidOperationException(nameof(this._param) + " is null.");
+                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +nameof(this._param) + " is null.");
             if (where == null)
                 throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(where));
 
@@ -386,7 +386,7 @@ namespace Utility
         {
             // nullチェック
             if (this._param == null)
-                throw new InvalidOperationException(nameof(this._param) + " is null.");
+                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +nameof(this._param) + " is null.");
             if (where == null)
                 throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(where));
 
@@ -646,7 +646,7 @@ namespace Utility
             if (oldName == null)
                 throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(oldName));
             if (oldName.Length <= 0)
-                throw new InvalidOperationException(nameof(oldName) + " is empty.");
+                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +nameof(oldName) + " is empty.");
 
             // 変換を行い結果を返します。
             return this.TextDatas
