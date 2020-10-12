@@ -9,8 +9,12 @@
         /// <summary>
         /// 入力ステータス
         /// </summary>
-        public enum InputStatus
+        public enum MassageInfo
         {
+            /// <summary>
+            /// 設定読み込み要求
+            /// </summary>
+            LoadSetting,
             /// <summary>
             /// メッセージ
             /// </summary>
@@ -23,6 +27,36 @@
             /// 入力エラー無し
             /// </summary>
             NoInputError,
+        }
+        /// <summary>
+        /// MainViewのボタン名
+        /// </summary>
+        public enum ButtonPropartyName
+        {
+            /// <summary>
+            /// ボタン１
+            /// </summary>
+            BtnInfo1,
+            /// <summary>
+            /// ボタン２
+            /// </summary>
+            BtnInfo2,
+            /// <summary>
+            /// ボタン３
+            /// </summary>
+            BtnInfo3,
+            /// <summary>
+            /// ボタン４
+            /// </summary>
+            BtnInfo4,
+            /// <summary>
+            /// ボタン５
+            /// </summary>
+            BtnInfo5,
+            /// <summary>
+            /// ボタン６(終了ボタンとして予約されています。)
+            /// </summary>
+            BtnInfo6,
         }
 
         /// <summary>

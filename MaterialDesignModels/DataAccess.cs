@@ -39,7 +39,8 @@ namespace MaterialDesignModels
                 // DBオープン
                 sqla.Open();
                 // SQL実行 １０件取得します。
-                c.MakeSelectSql(limit: 10);
+                // SQL文は自動生成しています。
+                var s10 = c.MakeSelectSql(limit: 10);
                 sqla.ExecuteQuery(c.QueryData);
                 // データを保存
                 list = c.ReadDataReader(sqla.DataReader).ToList();
@@ -47,13 +48,16 @@ namespace MaterialDesignModels
                 sqla.DataReader.Close();
             }
 
+            // １件目を渡しています。
             var cu = list[0];
             commonDatas.SetCommonDatas(cu);
 
-            cu.MakeInsertSql();
-            cu.MakeSelectSql();
-            cu.MakeDeleteSql();
-            cu.MakeUpdateSql();
+            // 自動生成されたSQL文を取得します。
+            // データはパラメータで渡しています。
+            var i = cu.MakeInsertSql();
+            var s = cu.MakeSelectSql();
+            var u = cu.MakeUpdateSql();
+            var d = cu.MakeDeleteSql();
 
             return true;
         }
@@ -87,9 +91,15 @@ namespace MaterialDesignModels
             return true;
         }
 
+        /// <summary>
+        /// Comboboxに設定(ItemSource)する国籍一覧を設定します。
+        /// 今回はDBから取得していません。
+        /// </summary>
+        /// <param name="commonDatas">共通データを設定します。</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         private void SetCountry(Common.CommonDatas commonDatas)
         {
+            // nullチェック
             if (commonDatas == null)
                 throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(commonDatas));
 

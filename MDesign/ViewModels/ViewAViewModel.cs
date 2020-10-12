@@ -106,16 +106,19 @@ namespace MaterialDesignViews.ViewModels
         /// <param name="container">拡張コンテナを設定します。</param>
         /// <param name="regionManager">リージョンマネージャを設定します。</param>
         /// <param name="eventAggregator">イベントアグリゲータを設定します。</param>
+        /// <param name="commonSettings">共通設定を設定します。</param>
         /// <param name="commonDatas">共通データを設定します。</param>
         public ViewAViewModel(
             [param: Required]IContainerExtension container,
             [param: Required]IRegionManager regionManager,
             [param: Required]IEventAggregator eventAggregator,
+            [param: Required]Common.CommonSettings commonSettings,
             [param: Required]Common.CommonDatas commonDatas
             ) : base(
                 container: container, 
                 regionManager: regionManager, 
                 eventAggregator: eventAggregator,
+                commonSettings: commonSettings,
                 commonDatas: commonDatas,
                 // MainViewName, ViewNameを設定します。
                 mainViewName: EnumDatas.ViewNames.Main.ToString(),
@@ -205,6 +208,9 @@ namespace MaterialDesignViews.ViewModels
         /// </summary>
         protected override void Loaded()
         {
+            // 共通設定を設定します。
+            this.SetCommonSettints(this.CommonSettings);
+
             // CommonDataから読み込みます。
             this.CommonDatas.GetViewDatas(this.ViewDatas);
 
@@ -214,8 +220,108 @@ namespace MaterialDesignViews.ViewModels
             // メッセージ送受信開始
             this.MessageManager.Start = true;
 
+            // 共通データ読み込みイベント発行
+            this.MessageManager.SendMessage(
+                new MessageInfoSend()
+                {
+                    Reciever = this.MainViewName,
+                    Sender = this.ViewName,
+                    Command = EnumDatas.MassageInfo.LoadSetting
+                });
+
             // 初期化完了フラグ設定
             this.InitiazaizuEnd = true;
+        }
+        /// <summary>
+        /// 共通設定の設定を表します。
+        /// </summary>
+        /// <param name="commonSettings">共通設定を設定します。</param>
+        private void SetCommonSettints(
+            Common.CommonSettings commonSettings
+            )
+        {
+            commonSettings.MainTitle = "メインタイトル";
+
+            // ボタン表示設定
+            commonSettings.ButtonInfo = new Dictionary<string, Common.ButtonInfo>()
+            {
+                // BtnInfo1押下時の表示View
+                {
+                    "BtnInfo1",
+                    new Common.ButtonInfo()
+                    {
+                        PropertyName = "BtnInfo1",
+                        ButtonTitle = "ViewA", //EnumDatas.ViewTitle.氏名.ToString()
+                        ButtonCommand = "Move ViewA",
+                        IsEnable = true,
+                        IsVisible = true,
+                    }
+                },
+                // BtnInfo2押下時の表示View
+                {
+                    "BtnInfo2",
+                    new Common.ButtonInfo()
+                    {
+                        PropertyName = "BtnInfo2", 
+                        ButtonTitle = "ViewB", //EnumDatas.ViewTitle.住所.ToString()
+                        ButtonCommand = "Move ViewB",
+                        IsEnable = true,
+                        IsVisible = true,
+                    }
+                },
+                // BtnInfo3押下時の表示View
+                {
+                    "BtnInfo3",
+                    new Common.ButtonInfo()
+                    {
+                        PropertyName = "BtnInfo3",
+                        ButtonTitle = "ViewC", //EnumDatas.ViewTitle.設定.ToString()
+                        ButtonCommand = "Move ViewC",
+                        IsEnable = true,
+                        IsVisible = true,
+                    }
+                },
+                // BtnInfo4押下時の表示View
+                {
+                    "BtnInfo4",
+                    new Common.ButtonInfo()
+                    {
+                        PropertyName = "BtnInfo4",
+                        IsEnable = false,
+                        IsVisible = false,
+                    }
+                },
+                // BtnInfo5押下時の表示View
+                {
+                    "BtnInfo5",
+                    new Common.ButtonInfo()
+                    {
+                        PropertyName = "BtnInfo5",
+                        IsEnable = false,
+                        IsVisible = false,
+                    }
+                },
+            };
+
+            // サブタイトル表示設定
+            commonSettings.ViewTitle = new Dictionary<string, string>()
+            {
+                // ViewA表示時のサブタイトル
+                {
+                    EnumDatas.ViewNames.ViewA.ToString(),
+                    "TitleA" //EnumDatas.ViewTitle.氏名.ToString()
+                },
+                // ViewB表示時のサブタイトル
+                {
+                    EnumDatas.ViewNames.ViewB.ToString(),
+                    "TitleB" //EnumDatas.ViewTitle.氏名.ToString()
+                },
+                // ViewC表示時のサブタイトル
+                {
+                    EnumDatas.ViewNames.ViewC.ToString(),
+                    "TitleC" //EnumDatas.ViewTitle.氏名.ToString()
+                },
+            };
         }
         #endregion Loaded
 

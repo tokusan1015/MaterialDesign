@@ -126,6 +126,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonDatas.cs" />
+    <Compile Include="CommonSettings.cs" />
     <Compile Include="TableBase.cs" />
     <Compile Include="ConstDatas.cs" />
     <Compile Include="EnumDatas.cs" />

@@ -100,8 +100,11 @@ namespace RPUtility
 
         #region 共通データ
         /// <summary>
-        /// 共通データオブジェクトを表します。
-        /// MainWindowViewModelでインスタンスを生成する必要があります。
+        /// 共通設定を表します。
+        /// </summary>
+        protected Common.CommonSettings CommonSettings { get; private set; } = null;
+        /// <summary>
+        /// 共通データを表します。
         /// </summary>
         protected Common.CommonDatas CommonDatas { get; private set; } = null;
         #endregion 共通データ
@@ -125,6 +128,7 @@ namespace RPUtility
         /// <param name="container">拡張コンテナを設定します。</param>
         /// <param name="regionManager">リージョンマネージャを設定します。</param>
         /// <param name="eventAggregator">イベントアグリゲータを設定します。</param>
+        /// <param name="commonSettings">共通設定を設定します。</param>
         /// <param name="commonDatas">共通データを設定します。</param>
         /// <param name="mainViewName">MainViewNameを設定します。</param>
         /// <param name="viewName">ViewNameを設定します。</param>
@@ -132,6 +136,7 @@ namespace RPUtility
             [param: Required]IContainerExtension container,
             [param: Required]IRegionManager regionManager,
             [param: Required]IEventAggregator eventAggregator,
+            [param: Required]object commonSettings,
             [param: Required]object commonDatas,
             [param: Required]string mainViewName,
             [param: Required]string viewName
@@ -143,6 +148,9 @@ namespace RPUtility
             this.EventAggregator = eventAggregator ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(eventAggregator));
             this.MainViewName = mainViewName ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(mainViewName));
             this.ViewName = viewName ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewName));
+            // objectからCommonSettingsにキャストして設定します。
+            var cs = commonSettings ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " + nameof(commonSettings));
+            this.CommonSettings = cs as Common.CommonSettings;
             // objectからCommonDatasにキャストして設定します。
             var cd = commonDatas ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(commonDatas));
             this.CommonDatas = cd as Common.CommonDatas;
@@ -621,9 +629,9 @@ namespace RPUtility
 
             // メッセージ送信
             var command = result ?
-                EnumDatas.InputStatus.InputError
-                : EnumDatas.InputStatus.NoInputError;
-            var eventParam = new InputStatusSend()
+                EnumDatas.MassageInfo.InputError
+                : EnumDatas.MassageInfo.NoInputError;
+            var eventParam = new MessageInfoSend()
             {
                 Reciever = this.MainViewName,
                 Sender = this.ViewName,

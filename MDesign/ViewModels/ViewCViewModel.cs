@@ -68,16 +68,19 @@ namespace MaterialDesignViews.ViewModels
         /// <param name="container">拡張コンテナを設定します。</param>
         /// <param name="regionManager">リージョンマネージャを設定します。</param>
         /// <param name="eventAggregator">イベントアグリゲータを設定します。</param>
+        /// <param name="commonSettings">共通設定を設定します。</param>
         /// <param name="commonDatas">共通データを設定します。</param>
         public ViewCViewModel(
             [param: Required]IContainerExtension container,
             [param: Required]IRegionManager regionManager,
             [param: Required]IEventAggregator eventAggregator,
+            [param: Required]Common.CommonSettings commonSettings,
             [param: Required]Common.CommonDatas commonDatas
             ) : base(
                 container: container,
                 regionManager: regionManager,
                 eventAggregator: eventAggregator,
+                commonSettings: commonSettings,
                 commonDatas: commonDatas,
                 // MainViewName, ViewNameを設定します。
                 mainViewName: EnumDatas.ViewNames.Main.ToString(),

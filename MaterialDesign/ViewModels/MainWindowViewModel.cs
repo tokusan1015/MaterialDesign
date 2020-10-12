@@ -31,7 +31,7 @@ namespace MaterialDesign.ViewModels
         /// メインタイトルを表します。
         /// </summary>
         public ReactivePropertySlim<string> MainTitle { get; } =
-            new ReactivePropertySlim<string>(initialValue: "管理画面");
+            new ReactivePropertySlim<string>(initialValue: "メイン画面");
         /// <summary>
         /// 画面タイトル
         /// </summary>
@@ -39,9 +39,10 @@ namespace MaterialDesign.ViewModels
             new ReactivePropertySlim<string>();
         /// <summary>
         /// ボタン1情報(Dataは使用しないのでint型にしています。)
+        /// displeyName, commandTextはViewモジュール側でのの設定が優先されます。
         /// </summary>
         [RPUtility.ControlInfo(
-            displeyName: "氏名"
+            displeyName: "ボタン１"
             , groupNo: 1
             , commandText: "Move ViewA"
             , isEnable: true
@@ -50,9 +51,10 @@ namespace MaterialDesign.ViewModels
         public RPUtility.ControlInfo<int> BtnInfo1 { get; } = new RPUtility.ControlInfo<int>();
         /// <summary>
         /// ボタン2情報(Dataは使用しないのでint型にしています。)
+        /// displeyName, commandTextはViewモジュール側でのの設定が優先されます。
         /// </summary>
         [RPUtility.ControlInfo(
-            displeyName: "住所"
+            displeyName: "ボタン２"
             , groupNo: 1
             , commandText: "Move ViewB"
             , isEnable: true
@@ -61,9 +63,10 @@ namespace MaterialDesign.ViewModels
         public RPUtility.ControlInfo<int> BtnInfo2 { get; } = new RPUtility.ControlInfo<int>();
         /// <summary>
         /// ボタン3情報(Dataは使用しないのでint型にしています。)
+        /// displeyName, commandTextはViewモジュール側でのの設定が優先されます。
         /// </summary>
         [RPUtility.ControlInfo(
-            displeyName: "設定"
+            displeyName: "ボタン３"
             , groupNo: 2
             , commandText: "Move ViewC"
             , isEnable: true
@@ -72,9 +75,10 @@ namespace MaterialDesign.ViewModels
         public RPUtility.ControlInfo<int> BtnInfo3 { get; } =new RPUtility.ControlInfo<int>();
         /// <summary>
         /// ボタン4情報(Dataは使用しないのでint型にしています。)
+        /// displeyName, commandTextはViewモジュール側でのの設定が優先されます。
         /// </summary>
         [RPUtility.ControlInfo(
-            displeyName: "一覧"
+            displeyName: "ボタン４"
             , groupNo: 2
             , commandText: "Move ViewD"
             , isEnable: false
@@ -83,9 +87,10 @@ namespace MaterialDesign.ViewModels
         public RPUtility.ControlInfo<int> BtnInfo4 { get; } = new RPUtility.ControlInfo<int>();
         /// <summary>
         /// ボタン5情報(Dataは使用しないのでint型にしています。)
+        /// displeyName, commandTextはViewモジュール側でのの設定が優先されます。
         /// </summary>
         [RPUtility.ControlInfo(
-            displeyName: "反転"
+            displeyName: "ボタン５"
             , groupNo: 3
             , commandText: "InverseEnable"
             , isEnable: true
@@ -94,6 +99,7 @@ namespace MaterialDesign.ViewModels
         public RPUtility.ControlInfo<int> BtnInfo5 { get; } = new RPUtility.ControlInfo<int>();
         /// <summary>
         /// ボタン6情報(Dataは使用しないのでint型にしています。)
+        /// 終了ボタンとして予約されています。
         /// </summary>
         [RPUtility.ControlInfo(
             displeyName: "終了"
@@ -114,16 +120,19 @@ namespace MaterialDesign.ViewModels
         /// <param name="container">拡張コンテナを設定します。</param>
         /// <param name="regionManager">リージョンマネージャを設定します。</param>
         /// <param name="eventAggregator">イベントアグリゲータを設定します。</param>
+        /// <param name="commonSettings">共通設定を設定します。</param>
         /// <param name="commonDatas">共通データを設定します。</param>
         public MainWindowViewModel(
             [param: Required]IContainerExtension container,
             [param: Required]IRegionManager regionManager,
             [param: Required]IEventAggregator eventAggregator,
+            [param: Required]Common.CommonSettings commonSettings,
             [param: Required]Common.CommonDatas commonDatas
             ) : base(
                 container: container,
                 regionManager: regionManager,
                 eventAggregator: eventAggregator,
+                commonSettings: commonSettings,
                 commonDatas: commonDatas,
                 // MainViewName,ViewNameを設定します。
                 mainViewName: EnumDatas.ViewNames.Main.ToString(),
@@ -226,9 +235,6 @@ namespace MaterialDesign.ViewModels
             // Viewの初期化処理を行います。
             this.InitializeViews();
 
-            // 初期ViewTitleを設定します。
-            this.ViewTitle.Value = EnumDatas.ViewTitle.氏名.ToString();
-
             // 初期画面を設定します。
             this.ChangeShowView(EnumDatas.ViewNames.ViewA.ToString());
             //RegionManager.RegisterViewWithRegion(
@@ -260,6 +266,82 @@ namespace MaterialDesign.ViewModels
             this.AddRegionAndViews<MaterialDesignViews.Views.ViewC>(
                 viewName: EnumDatas.ViewNames.ViewC.ToString());
         }
+        /// <summary>
+        /// 共通設定を読み込み処理を表します。
+        /// </summary>
+        /// <param name="viewName">View名を設定します。</param>
+        private void LoadStartSettings(
+            [param: Required]string viewName
+            )
+        {
+            // タイトル設定
+            this.LoadSettingsToMainTitle();
+
+            // ViewTitle設定
+            this.LoadSettingToViewTitle(viewName: viewName);
+
+            // ボタン設定
+            this.LoadSettingsToButtonInfo(viewName: viewName);
+
+        }
+        /// <summary>
+        /// 共通設定からMainTitleを取得し設定します。
+        /// </summary>
+        private void LoadSettingsToMainTitle(
+            )
+        {
+            if (this.CommonSettings.MainTitle != null)
+            {
+                // タイトル設定
+                this.MainTitle.Value = this.CommonSettings.MainTitle;
+            }
+        }
+        /// <summary>
+        /// 共通設定からViewTitleを取得し設定します。
+        /// </summary>
+        /// <param name="viewName">View名を設定します。</param>
+        private void LoadSettingToViewTitle(
+            [param: Required]string viewName
+            )
+        {
+            // nullチェック
+            if (viewName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " + nameof(viewName));
+
+            // ViewTitle設定
+            var vt = this.CommonSettings.ViewTitle
+                .Where(x => x.Key == viewName).Select(x => x.Value).FirstOrDefault();
+            if (vt != null)
+            {
+                this.ViewTitle.Value = vt;
+            }
+        }
+        /// <summary>
+        /// 共通設定からButtonInfoを取得設定します。
+        /// </summary>
+        /// <param name="viewName">View名を設定します。</param>
+        private void LoadSettingsToButtonInfo(
+            [param: Required]string viewName
+            )
+        {
+            // nullチェック
+            if (viewName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " + nameof(viewName));
+
+            // BottonInfo設定
+            foreach (var bi in this.CibList)
+            {
+                var btnInfo = this.CommonSettings.ButtonInfo
+                    .Where(x => x.Key == bi.PropertyName)
+                    .Select(x => x.Value)
+                    .FirstOrDefault();
+                if (btnInfo != null)
+                {
+                    if (btnInfo.ButtonCommand != null) bi.CommandText = btnInfo.ButtonCommand;
+                    if (btnInfo.ButtonTitle != null) bi.Title.Value = btnInfo.ButtonTitle;
+                    if (btnInfo.IsEnable != null) bi.IsEnable.Value = (bool)btnInfo.IsEnable;
+                    if (btnInfo.IsVisible != null) bi.IsVisible.Value = (bool)btnInfo.IsVisible;
+                }
+            }
+        }
         #endregion Loaded
 
         #region イベント
@@ -281,8 +363,8 @@ namespace MaterialDesign.ViewModels
             // 受信メッセージを処理します。
             switch (name)
             {
-                case "InputStatusSend":
-                    this.ProcessingInputStatusSend(eventParam: eventParam);
+                case "MessageInfoSend":
+                    this.ProcessingMessageInfoSend(eventParam: eventParam);
                     break;
                 default:
                     throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +$"ReceivedMessage:{name}");
@@ -293,7 +375,7 @@ namespace MaterialDesign.ViewModels
         /// コメント：BindableBasePlusに入れるべきか？
         /// </summary>
         /// <param name="eventParam">IEventParamを設定します。</param>
-        private void ProcessingInputStatusSend(
+        private void ProcessingMessageInfoSend(
             [param: Required]RPUtility.IEventParam eventParam
             )
         {
@@ -301,20 +383,27 @@ namespace MaterialDesign.ViewModels
             if (eventParam == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(eventParam));
 
             // IEventParamをキャストします。
-            var param = eventParam as RPUtility.InputStatusSend;
+            var param = eventParam as RPUtility.MessageInfoSend;
 
             // コマンドに対応する処理を行います。 
             switch (param.Command)
             {
-                case EnumDatas.InputStatus.InputError:
+                case EnumDatas.MassageInfo.LoadSetting:
+                    // 共通設定を読み込みます。
+                    if (Utility.BooleanUtili.IsExecuteAtOnce())
+                    {
+                        this.LoadStartSettings(EnumDatas.ViewNames.ViewA.ToString());
+                    }
+                    break;
+                case EnumDatas.MassageInfo.InputError:
                     // InputErrorの場合はボタンを使用禁止にします。
                     this.SetEnables(false, -1);
                     break;
-                case EnumDatas.InputStatus.NoInputError:
+                case EnumDatas.MassageInfo.NoInputError:
                     // NoInputErrorの場合はボタンを使用許可にします。
                     this.SetEnables(true, -1);
                     break;
-                case EnumDatas.InputStatus.Message:
+                case EnumDatas.MassageInfo.Message:
                     // Messageの場合は実装していません。
                     throw new NotImplementedException();
                 default:
@@ -339,12 +428,6 @@ namespace MaterialDesign.ViewModels
             // 画面遷移可能かチェックします。遷移可能な場合trueとなります。
             var mv = Utility.EnumUtil.EnumIsDefined(typeof(EnumDatas.ViewNames), ViewName);
 
-            // 押下されたボタンのViewTitleを取得します。
-            var viewTitle = (EnumDatas.ViewTitle)Utility.EnumUtil.EnumParse(
-                typeof(EnumDatas.ViewTitle),
-                ci.Title.Value
-                );
-
             // コマンド解析
             switch (Command)
             {
@@ -355,7 +438,7 @@ namespace MaterialDesign.ViewModels
                     if (mv && ViewName != this.ActiveViewName)
                     {
                         // ViewTitleを設定します。
-                        this.ViewTitle.Value = viewTitle.ToString();
+                        this.LoadSettingToViewTitle(ViewName);
 
                         // コマンドのViewNameを表示します。
                         this.ChangeShowView(ViewName);

@@ -35,7 +35,7 @@ namespace RPUtility
     /// IEventParamを必ず継承してください。
     /// </summary>
     [Utility.Developer(name: "tokusan1015")]
-    public class InputStatusSend : IEventParam
+    public class MessageInfoSend : IEventParam
     {
         /// <summary>
         /// 自身のタイプを取得します。
@@ -54,7 +54,7 @@ namespace RPUtility
         /// コマンドを表します。
         /// View送信の場合は、Messageになります。
         /// </summary>
-        public Common.EnumDatas.InputStatus Command { get; set; }
+        public Common.EnumDatas.MassageInfo Command { get; set; }
         /// <summary>
         /// メッセージを表します。
         /// ViewのSendMessageCommandで使用されます。

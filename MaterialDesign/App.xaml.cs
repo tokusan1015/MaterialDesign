@@ -31,8 +31,10 @@ namespace MaterialDesign
         /// <param name="containerRegistry">コンテナレジストリを設定します。</param>
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
+            // 共通設定(CommonDatas)を登録します。
+            containerRegistry.RegisterInstance(new Common.CommonSettings());
             // 共通データ(CommonDatas)を登録します。
-            containerRegistry.RegisterInstance<Common.CommonDatas>(new Common.CommonDatas());
+            containerRegistry.RegisterInstance(new Common.CommonDatas());
         }
 
         /// <summary>

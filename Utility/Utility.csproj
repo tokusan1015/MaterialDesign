@@ -127,6 +127,7 @@
     <Compile Include="Attributes.cs" />
     <Compile Include="AttributeTable.cs" />
     <Compile Include="AttributeUtil.cs" />
+    <Compile Include="BooleanUtili.cs" />
     <Compile Include="ClockTimer.cs" />
     <Compile Include="ColorUtil.cs" />
     <Compile Include="ControlUtil.cs" />

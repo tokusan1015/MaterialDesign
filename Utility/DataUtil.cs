@@ -877,4 +877,68 @@ namespace Utility
         }
     }
     #endregion DataPlus
+
+    #region DataWithValid
+    /// <summary>
+    /// 有効付きデータを表します。
+    /// 無効データの取得は例外が発生します。
+    /// </summary>
+    [Utility.Developer(name: "tokusan1015")]
+    public class DataWithValid<TData>
+    {
+        private TData _Value;
+        /// <summary>
+        /// データを表します。
+        /// </summary>
+        public TData Value
+        {
+            get
+            {
+                // 無効データの参照は例外発生となります。
+                if (!this.Valid) throw new InvalidOperationException("Value is invalid.");
+                return this._Value;
+            }
+            set
+            {
+                // 無効データの設定は例外発生となります。
+                if (!this.Valid) throw new InvalidOperationException("Value is invalid.");
+                this._Value = value;
+            }
+        }
+        /// <summary>
+        /// データの有効無効をあらわします。
+        /// 有効の場合trueに設定します。
+        /// 変更はSetValid(), SetInvalid()メソッドを使用してください。
+        /// </summary>
+        public bool Valid { get; private set; } = true;
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="value">値を設定します。</param>
+        public DataWithValid(
+            TData value
+            )
+        {
+            // nullチェック
+            if (value == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " + nameof(value));
+
+            this._Value = value;
+        }
+        /// <summary>
+        /// 値を有効にします。
+        /// </summary>
+        public void SetValid()
+        {
+            this.Valid = true;
+        }
+        /// <summary>
+        /// 値を無効にします。
+        /// </summary>
+        public void SetInvalid()
+        {
+            this.Valid = false;
+        }
+    }
+    #endregion DataValid
 }

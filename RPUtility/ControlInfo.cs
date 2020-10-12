@@ -107,6 +107,11 @@ namespace RPUtility
         /// </summary>
         public string PropertyName { get; set; } = "";
         /// <summary>
+        /// タイトル
+        /// </summary>
+        public ReactivePropertySlim<string> Title { get; } = 
+            new ReactivePropertySlim<string>();
+        /// <summary>
         /// グループNo.
         /// View単位でグループ化します。
         /// </summary>
@@ -114,7 +119,7 @@ namespace RPUtility
         /// <summary>
         /// コマンド
         /// </summary>
-        public string CommandText { get; protected set; } = string.Empty;
+        public string CommandText { get; set; } = string.Empty;
         /// <summary>
         /// 表示非表示
         /// true=表示, false=非表示
@@ -237,10 +242,6 @@ namespace RPUtility
         /// データ
         /// </summary>
         public ReactiveProperty<T> Data { get; private set; } = null;
-        /// <summary>
-        /// タイトル
-        /// </summary>
-        public ReactivePropertySlim<string> Title { get; private set; } = new ReactivePropertySlim<string>();
         #endregion Bindingプロパティ
 
         #region コンストラクタ

@@ -15,6 +15,7 @@ namespace RPUtility
     /// コマンドは列挙型で宣言しておきます。
     /// 送信先と送信元が同じ場合でも送信は実行されます。
     /// </summary>
+    [Utility.Developer(name: "tokusan1015")]
     public class MessageManager : BindableBase
     {
         /// <summary>
@@ -118,11 +119,11 @@ namespace RPUtility
         private void InputStatusSend()
         {
             // メッセージ生成
-            var eventParam = new InputStatusSend()
+            var eventParam = new MessageInfoSend()
             {
                 Sender = this.ViewName,
                 Reciever = this.MainViewName,
-                Command = Common.EnumDatas.InputStatus.Message,
+                Command = Common.EnumDatas.MassageInfo.Message,
                 Message = this.Message
             };
 
