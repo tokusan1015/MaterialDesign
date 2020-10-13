@@ -16,7 +16,7 @@ DB : SQLite
 
 2. MaterialDesign
 
-   MainViewモジュールプロジェクト(起動プロジェクト)
+   MainViewプロジェクト(起動プロジェクト)
 
 3. MaterialDesignView
 
