@@ -294,9 +294,9 @@ namespace RPUtility
         {
             // 引数チェック
             if (cibList == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(cibList));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(cibList));
             if (data == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(data));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(data));
 
             // プロパティ名を保存します。
             this.PropertyName = data.PropertyName;

@@ -76,7 +76,7 @@ namespace SQLiteAccessorBase
         {
             // nullチェック
             if (queryDatas == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(queryDatas));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(queryDatas));
 
             // 処理可能か調べます。
             this.CheckExecuteConnection();

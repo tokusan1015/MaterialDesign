@@ -105,7 +105,7 @@ namespace SQLiteAccessorBase
         {
             // nullチェック
             if (queryData == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(queryData));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(queryData));
 
             try
             {
@@ -187,7 +187,7 @@ namespace SQLiteAccessorBase
         {
             // nullチェック
             if (queryDatas == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(queryDatas));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(queryDatas));
 
             try
             {
@@ -218,7 +218,7 @@ namespace SQLiteAccessorBase
                             {
                                 // ロールバックします。
                                 transaction.Rollback();
-                                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +$"レコード挿入に失敗しました。\n SQL={queryData.Query}\n");
+                                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +$"レコード挿入に失敗しました。\n SQL={queryData.Query}\n");
                             }
                         }
                     }
@@ -264,7 +264,7 @@ namespace SQLiteAccessorBase
         {
             // nullチェック
             if (action == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(action));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(action));
 
             try
             {
@@ -304,7 +304,7 @@ namespace SQLiteAccessorBase
         {
             // nullチェック
             if (action == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(action));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(action));
 
             try
             {
@@ -345,7 +345,7 @@ namespace SQLiteAccessorBase
         {
             // nullチェック
             if (func == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(func));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(func));
 
             try
             {

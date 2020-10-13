@@ -25,7 +25,7 @@ namespace Utility
         {
             // nullチェック
             if (list == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(list));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(list));
 
             try
             {

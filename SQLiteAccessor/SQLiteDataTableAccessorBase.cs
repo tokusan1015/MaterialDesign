@@ -118,9 +118,9 @@ namespace SQLiteAccessorBase
         {
             // nullチェック
             if (tableClassType == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(tableClassType));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(tableClassType));
             if (sqlText == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(sqlText));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(sqlText));
 
             // データアダプタを開放します。
             this.Dispose_DataAdapter();

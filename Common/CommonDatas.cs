@@ -199,7 +199,7 @@ namespace Common
             )
         {
             // nullチェック
-            if (commonDatas == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(commonDatas));
+            if (commonDatas == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(commonDatas));
 
             this.Id = commonDatas.Id;
             this.LastName = commonDatas.LastName;
@@ -226,7 +226,7 @@ namespace Common
         {
             // nullチェック
             if (reader == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(reader));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(reader));
 
             var result = new List<CommonDatas>();
             // 先頭の１件のみを処理します。
@@ -262,7 +262,7 @@ namespace Common
         {
             // nullチェック
             if (dataRow == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(dataRow));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(dataRow));
 
             this.Id = Utility.StringUtil.IntdataParse(dataRow["Id"].ToString());
             this.LastName = dataRow["LastName"].ToString();
@@ -291,7 +291,7 @@ namespace Common
         {
             // nullチェック
             if (viewAdatas == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewAdatas));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(viewAdatas));
 
             this.Id = viewAdatas.Key;
             this.LastName = viewAdatas.LastName.Value;
@@ -311,7 +311,7 @@ namespace Common
         {
             // nullチェック
             if (viewAdatas == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewAdatas));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(viewAdatas));
 
             viewAdatas.Key = this.Id;
             viewAdatas.LastName.Value = this.LastName;
@@ -334,7 +334,7 @@ namespace Common
         {
             // nullチェック
             if (viewBdatas == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewBdatas));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(viewBdatas));
 
             this.Id = viewBdatas.Key;
             this.Prefectures = viewBdatas.Prefectures.Value;
@@ -353,7 +353,7 @@ namespace Common
         {
             // nullチェック
             if (viewBdatas == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewBdatas));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(viewBdatas));
 
             viewBdatas.Key = this.Id;
             viewBdatas.Prefectures.Value = this.Prefectures;
@@ -374,7 +374,7 @@ namespace Common
         {
             // nullチェック
             if (viewCdatas == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewCdatas));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(viewCdatas));
 
             this.Id = viewCdatas.Key;
             this.SavePath = viewCdatas.SavePath.Value;
@@ -391,7 +391,7 @@ namespace Common
         {
             // nullチェック
             if (viewCdatas == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewCdatas));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(viewCdatas));
 
             viewCdatas.Key = this.Id;
             viewCdatas.SavePath.Value = this.SavePath;

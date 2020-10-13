@@ -20,7 +20,7 @@ namespace Utility
             )
         {
             // nullチェック
-            if (enumType == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(enumType));
+            if (enumType == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(enumType));
 
             // 列挙型定義テキスト一覧を返します。
             return Enum.GetNames(enumType);
@@ -36,7 +36,7 @@ namespace Utility
             )
         {
             // nullチェック
-            if (enumType == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(enumType));
+            if (enumType == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(enumType));
 
             // 列挙型定数一覧を返します
             return Enum.GetValues(enumType);
@@ -56,8 +56,8 @@ namespace Utility
             )
         {
             // nullチェック
-            if (enumType == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(enumType));
-            if (value == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(value));
+            if (enumType == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(enumType));
+            if (value == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(value));
 
             return Enum.Parse(
                 enumType: enumType,
@@ -78,8 +78,8 @@ namespace Utility
             )
         {
             // nullチェック
-            if (enumType == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(enumType));
-            if (value == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(value));
+            if (enumType == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(enumType));
+            if (value == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(value));
 
             return Enum.IsDefined(
                 enumType: enumType,

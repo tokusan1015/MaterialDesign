@@ -143,16 +143,16 @@ namespace RPUtility
             )
         {
             // 拡張コンテナ、リージョンマネージャ、共通データの取得および設定をします。
-            this.Container = container ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(container));
-            this.RegionManager = regionManager ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(regionManager));
-            this.EventAggregator = eventAggregator ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(eventAggregator));
-            this.MainViewName = mainViewName ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(mainViewName));
-            this.ViewName = viewName ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewName));
+            this.Container = container ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(container));
+            this.RegionManager = regionManager ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(regionManager));
+            this.EventAggregator = eventAggregator ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(eventAggregator));
+            this.MainViewName = mainViewName ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(mainViewName));
+            this.ViewName = viewName ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(viewName));
             // objectからCommonSettingsにキャストして設定します。
-            var cs = commonSettings ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " + nameof(commonSettings));
+            var cs = commonSettings ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA + nameof(commonSettings));
             this.CommonSettings = cs as Common.CommonSettings;
             // objectからCommonDatasにキャストして設定します。
-            var cd = commonDatas ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(commonDatas));
+            var cd = commonDatas ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(commonDatas));
             this.CommonDatas = cd as Common.CommonDatas;
 
             // メッセージマネージャを設定します。
@@ -175,23 +175,24 @@ namespace RPUtility
             [param: Required]IRegion region
             )
         {
-            this.Region = region ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(region));
+            this.Region = region ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(region));
         }
         /// <summary>
         /// リージョンおよびViewsにViewを登録します。
         /// </summary>
-        /// <typeparam name="TView">登録するViewの型を設定します。</typeparam>
+        /// <param name="typeView">登録するViewの型を設定します。</param>
         /// <param name="viewName">呼び出し名称を設定します。</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
-        protected void AddRegionAndViews<TView>(
+        protected void AddRegionAndViews(
+            [param: Required]Type typeView,
             [param: Required]string viewName
-            ) where TView : UserControl
+            )
         {
             // nullチェック
-            if (viewName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewName));
+            if (typeView == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA + nameof(typeView));
+            if (viewName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(viewName));
 
             // Viewを取得・登録します。
-            var view = this.Container.Resolve<TView>();
+            var view = this.Container.Resolve(type: typeView) as UserControl;
             this.Region.Add(view);
 
             // Viewsに登録します。
@@ -370,8 +371,8 @@ namespace RPUtility
             )
         {
             // nullチェック
-            if (regionName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(regionName));
-            if (target == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(target));
+            if (regionName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(regionName));
+            if (target == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(target));
 
             // 画面遷移を実行します。
             this.RegionManager.RequestNavigate(
@@ -394,8 +395,8 @@ namespace RPUtility
             )
         {
             // nullチェック
-            if (regionName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(regionName));
-            if (target == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(target));
+            if (regionName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(regionName));
+            if (target == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(target));
 
             if (parameters != null)
             {
@@ -429,7 +430,7 @@ namespace RPUtility
         {
             // nullチェック
             if (navigationContext == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(navigationContext));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(navigationContext));
 
             // nullチェック
             if (value != null)
@@ -455,7 +456,7 @@ namespace RPUtility
         {
             // nullチェック
             if (navigationContext == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(navigationContext));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(navigationContext));
 
             return navigationContext.Parameters[PARAM_KEY_ALL];
         }

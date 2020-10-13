@@ -23,7 +23,7 @@ namespace RPUtility
         {            
             // nullチェック
             if (value == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(value));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(value));
 
             return Utility.StringUtil.IntdataParse(
                 value: value.ToString()
@@ -50,7 +50,7 @@ namespace RPUtility
         {
             // nullチェック
             if (value == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(value));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(value));
 
             return Utility.StringUtil.DoubledataParse(
                 value: value.ToString()
@@ -76,7 +76,7 @@ namespace RPUtility
         {
             // nullチェック
             if (value == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(value));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(value));
 
             return Utility.StringUtil.BooleanParse(
                 value: value.ToString()
@@ -103,7 +103,7 @@ namespace RPUtility
         {
             // nullチェック
             if (value == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(value));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(value));
 
             return Utility.StringUtil.DateTimeParse(
                 value: value.ToString()

@@ -124,9 +124,9 @@ namespace Utility
         {
             // null チェック
             if (classType == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(classType));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(classType));
             if (tableClassInstance == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(tableClassInstance));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(tableClassInstance));
 
             // テーブル構造定義クラスのColumnAttribute一覧を取得します。
             var calist = Utility.AttributeTable
@@ -215,9 +215,9 @@ namespace Utility
         {
             // null チェック
             if (tableClassInstance == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(tableClassInstance));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(tableClassInstance));
             if (dataRow == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(dataRow));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(dataRow));
 
             // カラム名一覧を取得します。
             var columnNames = Utility.AttributeTable

@@ -82,14 +82,14 @@ namespace RPUtility
             ) 
         {
             // nullチェック
-            this.EventAggregator = eventAggregator ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(eventAggregator));
-            if (receivedMessage == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(receivedMessage));
-            if (mainViewName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(mainViewName));
-            if (viewName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewName));
+            this.EventAggregator = eventAggregator ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(eventAggregator));
+            if (receivedMessage == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(receivedMessage));
+            if (mainViewName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(mainViewName));
+            if (viewName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(viewName));
 
             // 文字数チェック
-            if (mainViewName.Trim().Length < 1) throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +nameof(mainViewName) + " is Empty");
-            if (viewName.Trim().Length < 1) throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +nameof(viewName) + " is Empty");
+            if (mainViewName.Trim().Length < 1) throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(mainViewName) + " is Empty");
+            if (viewName.Trim().Length < 1) throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(viewName) + " is Empty");
 
             // 内部保存
             this.MainViewName = mainViewName;
@@ -142,7 +142,7 @@ namespace RPUtility
             ) where TEventParam : IEventParam
         {
             // nullチェック
-            if (eventParam == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(eventParam));
+            if (eventParam == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(eventParam));
 
             // メッセージ送信チェック
             if (!this.Start) return;

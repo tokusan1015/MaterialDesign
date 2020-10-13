@@ -259,11 +259,14 @@ namespace MaterialDesign.ViewModels
         private void InitializeViews()
         {
             // RegionおよびViewsに登録します。
-            this.AddRegionAndViews<MaterialDesignViews.Views.ViewA>(
+            this.AddRegionAndViews(
+                typeView: typeof(MaterialDesignViews.Views.ViewA),
                 viewName: EnumDatas.ViewNames.ViewA.ToString());
-            this.AddRegionAndViews<MaterialDesignViews.Views.ViewB>(
+            this.AddRegionAndViews(
+                typeView: typeof(MaterialDesignViews.Views.ViewB),
                 viewName: EnumDatas.ViewNames.ViewB.ToString());
-            this.AddRegionAndViews<MaterialDesignViews.Views.ViewC>(
+            this.AddRegionAndViews(
+                typeView: typeof(MaterialDesignViews.Views.ViewC),
                 viewName: EnumDatas.ViewNames.ViewC.ToString());
         }
         /// <summary>
@@ -305,7 +308,7 @@ namespace MaterialDesign.ViewModels
             )
         {
             // nullチェック
-            if (viewName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " + nameof(viewName));
+            if (viewName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA + nameof(viewName));
 
             // ViewTitle設定
             var vt = this.CommonSettings.ViewTitle
@@ -324,7 +327,7 @@ namespace MaterialDesign.ViewModels
             )
         {
             // nullチェック
-            if (viewName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " + nameof(viewName));
+            if (viewName == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA + nameof(viewName));
 
             // BottonInfo設定
             foreach (var bi in this.CibList)
@@ -355,7 +358,7 @@ namespace MaterialDesign.ViewModels
             )
         {
             // nullチェック
-            if (eventParam == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(eventParam));
+            if (eventParam == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(eventParam));
 
             // クラス名を取得します。
             var name = eventParam.EventType.Name;
@@ -367,7 +370,7 @@ namespace MaterialDesign.ViewModels
                     this.ProcessingMessageInfoSend(eventParam: eventParam);
                     break;
                 default:
-                    throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +$"ReceivedMessage:{name}");
+                    throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +$"ReceivedMessage:{name}");
             }
         }
         /// <summary>
@@ -380,7 +383,7 @@ namespace MaterialDesign.ViewModels
             )
         {
             // nullチェック
-            if (eventParam == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(eventParam));
+            if (eventParam == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(eventParam));
 
             // IEventParamをキャストします。
             var param = eventParam as RPUtility.MessageInfoSend;
@@ -408,7 +411,7 @@ namespace MaterialDesign.ViewModels
                     throw new NotImplementedException();
                 default:
                     // 不明の場合は例外を発生します。
-                    throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +nameof(param.Command));
+                    throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(param.Command));
             }
         }
 
@@ -458,7 +461,7 @@ namespace MaterialDesign.ViewModels
                     this.ExitApplication();
                     break;
                 default:
-                    throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +$"存在しないコマンドが指定されました。Command={Command}");
+                    throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +$"存在しないコマンドが指定されました。Command={Command}");
             }
         }
         #endregion イベント

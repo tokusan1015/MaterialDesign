@@ -231,7 +231,7 @@ namespace MaterialDesignViews.ViewModels
                 if (sender is ControlInfo<string> ci)
                 {
 #if DEBUG
-                    Console.WriteLine($"{ci.Title} : {ci.Data.Value}");
+                    Console.WriteLine($"{this.ViewName} : {ci.Title} : {ci.Data.Value}");
 #endif
                     // 入力項目の検証を行います。
                     this.CheckValidation(save: true);

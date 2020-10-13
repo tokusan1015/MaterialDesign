@@ -54,7 +54,7 @@ namespace Utility
             [param: Required]string query
             )
         {
-            this._query = query ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(query));
+            this._query = query ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(query));
         }
         /// <summary>
         /// コンストラクタ
@@ -66,8 +66,8 @@ namespace Utility
             [param: Required]ColumnParam param
             )
         {
-            this._query = query ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(query));
-            this._param = param ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(param));
+            this._query = query ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(query));
+            this._param = param ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(param));
         }
         #endregion コンストラクタ
 
@@ -84,7 +84,7 @@ namespace Utility
         {
             // nullチェック
             if (tableClassInstance == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(tableClassInstance));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(tableClassInstance));
 
             // テーブル名が設定されていない場合
             if (this.TableName.Length <= 0)
@@ -119,7 +119,7 @@ namespace Utility
         {
             // nullチェック
             if (tableClassInstance == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(tableClassInstance));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(tableClassInstance));
 
             // パラメータが設定されていない場合は再設定します。
             if (this._param == null)
@@ -156,7 +156,7 @@ namespace Utility
         {
             // Paramがnullの場合例外を発生します。
             if (this._param == null)
-                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +"_param is null.");
+                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +"_param is null.");
 
             string result = "";
             var calist = this._param.Select(x => x.ColumnName).ToArray();
@@ -180,7 +180,7 @@ namespace Utility
         {
             // Paramがnullの場合例外を発生します。
             if (this._param == null)
-                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +"_param is null.");
+                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +"_param is null.");
 
             // テーブル生成用SQL文字列
             var sb = new StringBuilder();
@@ -232,11 +232,11 @@ namespace Utility
         {
             // nullチェック
             if (this._param == null)
-                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +"_param is null.");
+                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +"_param is null.");
             if (where == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(where));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(where));
             if (orderby == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(orderby));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(orderby));
 
             // SELECT {columnName[,columnName...]} FROM {tableName} {WHERE} {ORDERBY} {LIMIT} {OFFSET};
             const string SELECT = @"SELECT {1} FROM {0} {2} {3} {4} {5};";
@@ -287,7 +287,7 @@ namespace Utility
         {
             // Paramがnullの場合例外を発生します。
             if (this._param == null)
-                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +"_param is null.");
+                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +"_param is null.");
 
             const string INSERT = @"INSERT INTO {0}({1})VALUES({2});";
 
@@ -332,9 +332,9 @@ namespace Utility
         {
             // nullチェック
             if (this._param == null)
-                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +nameof(this._param) + " is null.");
+                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(this._param) + " is null.");
             if (where == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(where));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(where));
 
             // UPDATE テーブル名 SET 列名1=値1[,列名n=値n] WHERE 条件
             const string UPDATE = @"UPDATE {0} SET {1} WHERE {2};";
@@ -386,9 +386,9 @@ namespace Utility
         {
             // nullチェック
             if (this._param == null)
-                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +nameof(this._param) + " is null.");
+                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(this._param) + " is null.");
             if (where == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(where));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(where));
 
             // UPDATE テーブル名 SET 列名1=値1[,列名n=値n] WHERE 条件
             const string DELETE = @"DELETE FROM {0} WHERE {1};";
@@ -456,7 +456,7 @@ namespace Utility
         {
             // nullチェック
             if (columnInfo == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(columnInfo));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(columnInfo));
 
             // columnInfoを追加します。
             this.ColumnInfos.Add(item: columnInfo);
@@ -479,7 +479,7 @@ namespace Utility
         {
             // nullチェック
             if (columnName == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(columnName));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(columnName));
 
             // 存在チェックを行い結果を返します。
             return this.ColumnInfos.Any(x => x.ColumnName == columnName);
@@ -496,7 +496,7 @@ namespace Utility
         {
             // nullチェック
             if (columnName == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(columnName));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(columnName));
 
             // カラム名に対応するColumnIndoを返します。
             return this.ColumnInfos
@@ -514,7 +514,7 @@ namespace Utility
         {
             // nullチェック
             if (columnName == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(columnName));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(columnName));
 
             // 指定したカラム名をコレクションから削除し結果を返します。
             return this.ColumnInfos
@@ -571,8 +571,8 @@ namespace Utility
                 [param: Required]string newName
                 )
             {
-                this.OldName = oldName ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(oldName));
-                this.NewName = newName ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(newName));
+                this.OldName = oldName ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(oldName));
+                this.NewName = newName ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(newName));
             }
         }
 
@@ -595,11 +595,11 @@ namespace Utility
         {
             // nullチェック
             if (oldName == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(oldName));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(oldName));
             if (oldName.Length <= 0)
                 throw new ArgumentException(nameof(oldName) + " is empty.");
             if (newName == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(newName));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(newName));
             if (newName.Length <= 0)
                 throw new ArgumentException(nameof(newName) + " is empty.");
 
@@ -624,9 +624,9 @@ namespace Utility
         {
             // nullチェック
             if (oldName == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(oldName));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(oldName));
             if (oldName.Length <=0)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(oldName));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(oldName));
 
             // 存在チェックを行い結果を返します。
             return this.TextDatas
@@ -644,9 +644,9 @@ namespace Utility
         {
             // nullチェック
             if (oldName == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(oldName));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(oldName));
             if (oldName.Length <= 0)
-                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + " : " +nameof(oldName) + " is empty.");
+                throw new InvalidOperationException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(oldName) + " is empty.");
 
             // 変換を行い結果を返します。
             return this.TextDatas
@@ -745,7 +745,7 @@ namespace Utility
         {
             // nullチェック
             if (dbType == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(dbType));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(dbType));
 
             var result = this.ConvertDictionary.Convert(dbType);
             if (result == null)
@@ -870,7 +870,7 @@ namespace Utility
         {
             // nullチェック
             if (originalData == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(originalData));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(originalData));
 
             this._original = originalData;
             this._value = originalData;
@@ -921,7 +921,7 @@ namespace Utility
             )
         {
             // nullチェック
-            if (value == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " + nameof(value));
+            if (value == null) throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA + nameof(value));
 
             this._Value = value;
         }

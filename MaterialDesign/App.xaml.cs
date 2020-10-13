@@ -48,7 +48,9 @@ namespace MaterialDesign
             base.ConfigureModuleCatalog(moduleCatalog);
 
             // モジュールを登録します。
-            moduleCatalog.AddModule<MaterialDesignViews.MDesignModule>();
+            moduleCatalog.AddModule(
+                moduleType: typeof(MaterialDesignViews.MDesignModule)
+                );
         }
 
         /// <summary>

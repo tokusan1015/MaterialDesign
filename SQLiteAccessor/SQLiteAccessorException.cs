@@ -88,7 +88,7 @@ namespace SQLiteAccessorBase
             )
         {
             if (info == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(info));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(info));
 
             info.AddValue("CallerMemberName", this.CallerMemberName);
 

@@ -24,7 +24,7 @@ namespace MaterialDesignModels
         {
             // nullチェック
             if (commonDatas == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(commonDatas));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(commonDatas));
 
             // 国籍コンボボックス
             this.SetCountry(commonDatas);
@@ -74,7 +74,7 @@ namespace MaterialDesignModels
         {
             // nullチェック
             if (tableBase == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(tableBase));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(tableBase));
 
             // データ保存処理を行います。
             using (var sqla = new SQLiteAccessor())
@@ -101,7 +101,7 @@ namespace MaterialDesignModels
         {
             // nullチェック
             if (commonDatas == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(commonDatas));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(commonDatas));
 
             commonDatas.CountryDic.Add("CA", "カナダ");
             commonDatas.CountryDic.Add("DE", "ドイツ");

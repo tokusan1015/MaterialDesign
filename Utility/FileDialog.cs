@@ -90,10 +90,10 @@ namespace Utility
             this._dlg.IsFolderPicker = isFolderPicker;
             
             // タイトルを設定します。
-            this._dlg.Title = title ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(title));
+            this._dlg.Title = title ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(title));
 
             // 初期ディレクトリを設定します。
-            this._dlg.InitialDirectory = initialDirectory ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(initialDirectory));
+            this._dlg.InitialDirectory = initialDirectory ?? throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(initialDirectory));
 
             // ダイアログを表示します。
             if (this._dlg.ShowDialog() == MWAPICP::Dialogs.CommonFileDialogResult.Ok)

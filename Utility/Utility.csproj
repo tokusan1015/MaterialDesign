@@ -130,6 +130,7 @@
     <Compile Include="BooleanUtili.cs" />
     <Compile Include="ClockTimer.cs" />
     <Compile Include="ColorUtil.cs" />
+    <Compile Include="ConstUtili.cs" />
     <Compile Include="ControlUtil.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="DataUtil.cs" />

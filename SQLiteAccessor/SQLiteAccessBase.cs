@@ -41,7 +41,7 @@ namespace SQLiteAccessorBase
         {
             // nullチェック
             if (dataSource == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(dataSource));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(dataSource));
 
             // データソースを設定します。
             if (dataSource.Length > 0)
@@ -213,9 +213,9 @@ namespace SQLiteAccessorBase
         {
             // nullチェック
             if (cmd == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(cmd));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(cmd));
             if (queryData == null)
-                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + " : " +nameof(queryData));
+                throw new ArgumentNullException(MethodBase.GetCurrentMethod().Name + Utility.ConstUtili.ERR_SEPA +nameof(queryData));
 
             // パラメータクリア
             cmd.Parameters.Clear();
